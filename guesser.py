@@ -2,7 +2,6 @@
 Guessing logic for Wordle
 """
 
-#test
 from copy import copy
 from dataclasses import dataclass
 from re import findall, MULTILINE
@@ -37,11 +36,11 @@ def get_hints(guess: str):
 @dataclass
 class Match:
     """Store all information for the letter in a Match object"""
-    def __init__(self) -> None:
-        self.known_positions = set()
-        self.possible_positions = {i for i in range(5)}
-        self.count = int()
-        self.count_exact = bool()
+    
+    known_positions = set()
+    possible_positions = {i for i in range(5)}
+    count = int()
+    count_exact = bool()
 
 
 def populate_match_data(letters: dict[str, Match], hints: dict, guess: str):

@@ -1,6 +1,8 @@
 """
 Gussing logic for Wordle
 """
+import os
+print(os.getcwd())
 
 from collections import Counter
 from copy import copy
