@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from random import choice
 from re import findall, MULTILINE
 from string import ascii_lowercase as alphabet
-from wordlist import *
 
 
 def get_hints(guess: str):
