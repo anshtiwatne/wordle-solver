@@ -8,9 +8,6 @@ from random import choice
 from string import ascii_lowercase as alphabet
 from subprocess import REALTIME_PRIORITY_CLASS
 
-from markupsafe import re
-from scraper import get_hints
-
 class LetterData:
     def __init__(self) -> None:
         self.known_positions = set()
