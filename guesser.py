@@ -6,7 +6,7 @@ from copy import copy
 from re import findall, MULTILINE
 from random import choice
 from string import ascii_lowercase as alphabet
-from subprocess import REALTIME_PRIORITY_CLASS
+from scraper import get_hints
 
 class LetterData:
     def __init__(self) -> None:
