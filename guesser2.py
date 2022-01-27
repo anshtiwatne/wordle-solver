@@ -1,4 +1,0 @@
-"""
-Guessing logic for Wordle
-"""
-
