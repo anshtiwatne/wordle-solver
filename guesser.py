@@ -106,13 +106,14 @@ if __name__ == "__main__":
     result = str()
 
     guesses = guess_word()
-    for guess in guesses:
+    for i, guess in enumerate(guesses):
+        result += f"{i + 1}. "
         hints = get_hints(guess)
         for i, hint in hints.items():
             letter = guess[i]
-            if hint == True: result += Fore.LIGHTGREEN_EX + letter + Fore.RESET
-            elif hint == False: result += Fore.LIGHTYELLOW_EX + letter + Fore.RESET
-            elif hint == None: result += Fore.LIGHTBLACK_EX + letter + Fore.RESET
+            if hint == True: result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
+            elif hint == False: result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
+            elif hint == None: result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
         result += "\n"
     result = result[:-1]
     
