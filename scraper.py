@@ -2,7 +2,7 @@
 For web scraping Wordle to getting back hints
 """
 
-import playwright
+# import playwright
 
 
 # WIP temperory function to get hints locally

@@ -3,6 +3,8 @@ Guessing logic for Wordle
 """
 
 from copy import copy
+from colorama import init, Fore
+from os import path
 from random import choice
 from string import ascii_lowercase
 from scraper import get_hints
@@ -83,7 +85,8 @@ def guess_word() -> str:
     guess = "ratio"  # first guess to start the game
     hints = get_hints(guess)
     letters = {letter: LetterData() for letter in list(ascii_lowercase)}
-    words = [word for word in open("words.txt").read().split()]
+    abspath = path.join(path.dirname(__file__), "words.txt")
+    words = [word for word in open(abspath).read().split()]
     guesses = [guess]
 
     while set(hints.values()) != {True}:
@@ -99,4 +102,18 @@ def guess_word() -> str:
 
 
 if __name__ == "__main__":
-    print(guess_word())
+    init(autoreset=True)
+    result = str()
+
+    guesses = guess_word()
+    for guess in guesses:
+        hints = get_hints(guess)
+        for i, hint in hints.items():
+            letter = guess[i]
+            if hint == True: result += Fore.LIGHTGREEN_EX + letter + Fore.RESET
+            elif hint == False: result += Fore.LIGHTYELLOW_EX + letter + Fore.RESET
+            elif hint == None: result += Fore.LIGHTBLACK_EX + letter + Fore.RESET
+        result += "\n"
+    result = result[:-1]
+    
+    print(result)
