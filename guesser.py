@@ -7,7 +7,29 @@ from colorama import init, Fore
 from os import path
 from random import choice
 from string import ascii_lowercase
-from scraper import get_hints
+
+
+check_word = "empty"
+
+
+def get_hints(guess: str):
+    """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
+
+    word = copy(check_word)
+    hints = {i: None for i in range(5)}
+
+    for i, letter in enumerate(guess):
+        if letter in word and guess[i] == word[i]:
+            hints[i] = True
+            word = f"{word[:i]}.{word[i+1:]}"
+
+    for i, letter in enumerate(guess):
+        if letter in word and guess[i] != word[i]:
+            if hints[i] != True:
+                hints[i] = False
+                word = word.replace(letter, ".", 1)
+
+    return hints
 
 
 class LetterData:
