@@ -2,17 +2,16 @@
 For web scraping Wordle to getting back hints
 """
 
-from copy import copy
 import playwright
 
 
-# temperory function to get hints locally
+# WIP temperory function to get hints locally
 def get_hints(guess: str):
     """Replicate wordle behaviour:\nChecks a guess against the answer and only returns hints"""
 
-    word = "robot" # for now
+    word = "robot"  # for now
     hints = {i: None for i in range(5)}
-    
+
     for i, letter in enumerate(guess):
         if letter in word and guess[i] == word[i]:
             hints[i] = True
