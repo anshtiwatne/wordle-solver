@@ -11,9 +11,10 @@ from scraper import get_hints
 class LetterData:
     def __init__(self) -> None:
         self.known_positions = set()
-        self.possible_positions = {i for i in range(5)}
+        self.impossible_positions = set()
         self.min_count = int()
         self.count_frozen = bool()
+        # not required
         self.yellow = bool()
         self.yellow_count = int()
 
@@ -22,24 +23,20 @@ def build_letters_data(letters: dict[str, LetterData], guess: str):
     """Take the hints from wordle and adds data accordingly to each letter's Match object"""
 
     hints = get_hints(guess)
+    yellows = dict()
 
     for i, hint in hints.items():
         letter = guess[i]
 
         if hint == True:
-            # letter is in the right position and there's one more of the letter
             letters[letter].known_positions.add(i)
-            letters[letter].min_count += 1
         elif hint == False:
-            # letter is in the wrong position and there's one more of the letter
-            letters[letter].possible_positions.remove(i)
-            letters[letter].min_count += 1
-            letters[letter].yellow = True
-            letters[letter].yellow_count += 1
+            letters[letter].impossible_positions.add(i)
+            yellows[letter] = yellows.get(letter, 0) + 1
         elif hint == None:
-            # letter is in the wrong position and there's no more of the letter
-            letters[letter].possible_positions.remove(i)
             letters[letter].count_frozen = True
+
+        letters[letter].min_count = len(letters[letter].known_positions) + yellows.get(letter, 0)
 
 
 def eliminate(words: set[str], guess: str, letters: dict[str, LetterData]):
@@ -52,22 +49,25 @@ def eliminate(words: set[str], guess: str, letters: dict[str, LetterData]):
 
             if i in letters[guess[i]].known_positions and word[i] != guess[i]:
                 retained_words.remove(word)
+                if word == "robot": print(letter, word, "eeeeee")
                 break
 
-            elif i not in letters[letter].possible_positions:
+            elif i in letters[letter].impossible_positions:
                 retained_words.remove(word)
+                if word == "robot": print(letter, word, "ffffff")
                 break
 
             elif letters[letter].count_frozen == True:
                 if word.count(letter) != letters[letter].min_count:
                     retained_words.remove(word)
+                    if word == "robot": print(letter, word, "gggggg", letters[letter].min_count)
                     break
-                
+
         if word in retained_words:
             for letter in letters.keys():
-                if letters[letter].yellow:
+                if letters[letter].impossible_positions:
                     if letter in word:
-                        if word.count(letter) < letters[letter].yellow_count:
+                        if word.count(letter) < letters[letter].min_count:
                             retained_words.remove(word)
                             break
                     else:
@@ -81,13 +81,11 @@ def eliminate(words: set[str], guess: str, letters: dict[str, LetterData]):
 def guess_word() -> str:
     """Guess the word, for every incorrect guess additional data gained to make a new guess"""
 
-    guess = "ratio"  # first guess to start the game
+    guess = "ratio"  # first guess to start the game torta
     hints = get_hints(guess)
     print(guess)
     letters = {letter: LetterData() for letter in list(alphabet)}
-
-    with open("words.txt") as file:
-        words = list(findall(r"^[a-z]{5}$", file.read(), flags=MULTILINE))
+    words = [word for word in open("words.txt").read().split()]
 
     while set(hints.values()) != {True}:
         words.remove(guess)
