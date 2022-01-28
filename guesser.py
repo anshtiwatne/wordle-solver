@@ -5,14 +5,16 @@ Guessing logic for Wordle
 from copy import copy
 from colorama import init, Fore
 from os import path
+from playwright.sync_api import sync_playwright
 from random import choice
+from re import search
 from string import ascii_lowercase
 
-
 check_word = "empty"
+url = "https://www.powerlanguage.co.uk/wordle/"
 
 
-def get_hints(guess: str):
+def get_local_hints(guess: str):
     """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
 
     word = copy(check_word)
@@ -40,10 +42,9 @@ class LetterData:
         self.count_frozen = bool()
 
 
-def build_letters_data(letters: dict[str, LetterData], guess: str):
+def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
     """Take the hints from wordle and add data accordingly to each letter's LetterData object"""
 
-    hints = get_hints(guess)
     yellows = dict()
 
     for i, hint in hints.items():
@@ -65,12 +66,12 @@ def build_letters_data(letters: dict[str, LetterData], guess: str):
             letters[letter].known_positions) + yellows.get(letter, 0)
 
 
-def eliminate(words: set[str], guess: str, letters: dict[str, LetterData]):
-    """Check every word in words and remove it if it doesn't meet the requirements"""
+def eliminate(wordlist: list[str], guess: str, letters: dict[str, LetterData]):
+    """Check every word in wordslist and remove it if it doesn't meet the requirements"""
 
-    retained_words = copy(words)
+    retained_words = copy(wordlist)
 
-    for word in words:
+    for word in wordlist:
         for i, letter in enumerate(word):
 
             if i in letters[guess[i]].known_positions and word[i] != guess[i]:
@@ -101,42 +102,69 @@ def eliminate(words: set[str], guess: str, letters: dict[str, LetterData]):
     return retained_words
 
 
-def guess_word() -> str:
+def guess_word() -> list:
     """Guess the word, for every incorrect gets additional data gained to make a new guess"""
 
-    guess = "ratio"  # first guess to start the game
-    hints = get_hints(guess)
-    letters = {letter: LetterData() for letter in list(ascii_lowercase)}
-    abspath = path.join(path.dirname(__file__), "words.txt")
-    words = [word for word in open(abspath).read().split()]
-    guesses = [guess]
+    with sync_playwright() as sync:
+        browser = sync.chromium.launch(headless=False, slow_mo=50)
+        page = browser.new_page()
+        page.goto(url)
+        page.click(".close-icon")
 
-    while set(hints.values()) != {True}:
-        words.remove(guess)
-        build_letters_data(letters, guess)
-        words = eliminate(words, guess, letters)
+        def get_wordle_hints(guess: str):
+            page.type("#board", f"{guess}\n")
+            page.is_visible("#board")
+            html = page.inner_html(".row")
+            hints = {i: None for i in range(5)}
 
-        guess = choice(words)
-        hints = get_hints(guess)
-        guesses.append(guess)
+            for i, letter in enumerate(guess):
+                hint = search(f"letter=\"{letter}\" evaluation=\"([a-z].*?)\"", html)[1]
+                if hint == "correct": hints[i] = True
+                elif hint == "present": hints[i] = False
+                elif hint == "absent": hints[i] = None
 
-    return guesses
+            return hints
+
+        guess = "ratio"  # first guess to start the game
+        hints = get_wordle_hints(guess)
+        letters = {letter: LetterData() for letter in list(ascii_lowercase)}
+        abspath = path.join(path.dirname(__file__), "words.txt")
+        wordlist = [word for word in open(abspath).read().split()]
+        guesses = [guess]
+
+        while set(hints.values()) != {True}:
+            wordlist.remove(guess)
+            build_letters_data(letters, guess, hints)
+            wordlist = eliminate(wordlist, guess, letters)
+
+            guess = choice(wordlist)
+            hints = get_wordle_hints(guess)
+            guesses.append(guess)
+            
+        return guesses
 
 
 if __name__ == "__main__":
+    guess_word()
+
+if __name__ != "__main__":
+    guess_word
+    quit()
+
     init(autoreset=True)
     result = str()
-
     guesses = guess_word()
+
     for i, guess in enumerate(guesses):
         result += f"{i + 1}. "
-        hints = get_hints(guess)
+        hints = get_wordle_hints(guess)
+
         for i, hint in hints.items():
             letter = guess[i]
             if hint == True: result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
             elif hint == False: result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
             elif hint == None: result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
         result += "\n"
+
     result = result[:-1]
-    
     print(result)
