@@ -21,7 +21,7 @@ guesser.guess_word()
 ```
 
 ## Contributing
-Send a pull request if you'd like to make a change or open an issue. You're free to use the guessing script for your own implementations
+Send a pull request if you'd like to make a change or open an issue. You're free to use the guessing algorithm for your own implementations
 
 ## License
 [MIT](https://github.com/anshunderscore/wordle_solver/blob/main/LICENSE)
