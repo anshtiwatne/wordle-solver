@@ -6,10 +6,11 @@ import copy
 import dataclasses
 import os
 import random
-import re
+# import re
 import string
 import colorama
-from playwright.sync_api import sync_playwright
+from colorama import Fore
+# from playwright.sync_api import sync_playwright
 
 CHECK_WORD = "empty"
 abspath = os.path.join(os.path.dirname(__file__), "words.txt")
@@ -18,7 +19,8 @@ URL = "https://www.powerlanguage.co.uk/wordle/"
 
 
 def get_hints(guess: str):
-  """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
+    """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
+
     word = copy.copy(check_word)
     hints = {i: None for i in range(5)}
 
@@ -111,11 +113,11 @@ def colorize(guess: str, hints: dict[int, str]):
     for i, hint in hints.items():
         letter = guess[i]
         if hint is True:
-            result += f"{colorama.Fore.LIGHTGREEN_EX}{letter}{colorama.Fore.RESET}"
+            result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
         elif hint is False:
-            result += f"{colorama.Fore.LIGHTYELLOW_EX}{letter}{colorama.Fore.RESET}"
+            result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
         elif hint is None:
-            result += f"{colorama.Fore.LIGHTBLACK_EX}{letter}{colorama.Fore.RESET}"
+            result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
 
     return result
 
@@ -151,6 +153,7 @@ def main() -> list:
         build_letters_data(letters, guess, hints)
         possible_words = eliminate(possible_words, guess, letters)
 
+        if not possible_words: raise IndexError("No possible words to choose from")
         guess = random.choice(possible_words)
         hints = get_hints(guess)
 
