@@ -15,7 +15,7 @@ python3 guesser.py
 ```python
 import guesser
 
-# Yields a word until word isn't correct
+# Yields a word until word is correct
 
 guesser.guess_word()
 ```
