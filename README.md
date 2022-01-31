@@ -15,7 +15,7 @@ python3 guesser.py
 ```python
 import guesser
 
-# Until the word isn't correct, picks a word from possible words and shortens the possiblities based on its hints
+# Yields a word until word isn't correct
 
 guesser.guess_word()
 ```
