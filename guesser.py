@@ -90,21 +90,21 @@ def eliminate(possible_words: list[str], guess: str, letters: dict[str, LetterDa
                     break
 
         # check if all the yellows are present in the word in their possible positions
-        if word in retained_words:
-            for letter in letters.keys():
-                if letters[letter].impossible_positions:
-                    if letter in word:
-                        if word.count(letter) < letters[letter].min_count:
-                            retained_words.remove(word)
-                            break
-                    else:
-                        retained_words.remove(word)
-                        break
+        if word not in retained_words: continue
+        for letter in letters.keys():
+
+            if not letters[letter].impossible_positions: continue
+            elif letter not in word:
+                retained_words.remove(word)
+                break
+            elif word.count(letter) < letters[letter].min_count:
+                retained_words.remove(word)
+                break
 
     return retained_words
 
 
-def colorize_guess(guess: str, hints: dict[int, str]):
+def colorize(guess: str, hints: dict[int, str]):
     """Color the guess word based on it's hints"""
     init(autoreset=True)
     result = str()
@@ -167,7 +167,7 @@ if __name__ == "__main__":
         try:
             check_word = get_word()
             for guess, hints in guess_word():
-                print(colorize_guess(guess, hints))
+                print(colorize(guess, hints))
         except KeyboardInterrupt:
             print("Exiting...")
             break
