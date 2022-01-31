@@ -120,7 +120,23 @@ def colorize(guess: str, hints: dict[int, str]):
     return result
 
 
-def guess_word() -> list:
+def get_word():
+    """Get the word for the guesses to check against"""
+
+    check_word = input("\nWord: ")
+
+    while len(check_word) != 5:
+        print("Word must be 5 letters long")
+        check_word = input("\nTry again: ")
+
+    while check_word not in wordlist:
+        print("Word not in list")
+        check_word = input("\nTry again: ")
+
+    return check_word
+
+
+def main() -> list:
     """Guess the word, for every incorrect gets additional data gained to make a new guess"""
 
     guess = "ratio"
@@ -141,22 +157,6 @@ def guess_word() -> list:
         yield guess, hints
 
 
-def get_word():
-    """Get the word for the guesses to check against"""
-
-    check_word = input("\nWord: ")
-
-    while len(check_word) != 5:
-        print("Word must be 5 letters long")
-        check_word = input("\nTry again: ")
-
-    while check_word not in wordlist:
-        print("Word not in list")
-        check_word = input("\nTry again: ")
-
-    return check_word
-
-
 if __name__ == "__main__":
     print("\nChoose any five letter word and let the guesser guess your word\n")
     print("Green: letter is in the word and in the right position")
@@ -165,5 +165,5 @@ if __name__ == "__main__":
 
     while True:
         check_word = get_word()
-        for guess, hints in guess_word():
+        for guess, hints in main():
             print(colorize(guess, hints))
