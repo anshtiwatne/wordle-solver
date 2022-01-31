@@ -2,17 +2,17 @@
 Guessing logic for Wordle
 """
 
-from colorama import init, Fore
-from copy import copy
-from dataclasses import dataclass, field
-from os import path
+import colorama
+import copy
+import dataclasses
+import os
+import random
+import re
+import string
 # from playwright.sync_api import sync_playwright
-from random import choice
-from re import search
-from string import ascii_lowercase
 
 check_word = "empty"
-abspath = path.join(path.dirname(__file__), "words.txt")
+abspath = os.path.join(os.path.dirname(__file__), "words.txt")
 wordlist = [word for word in open(abspath).read().split()]
 url = "https://www.powerlanguage.co.uk/wordle/"
 
@@ -20,7 +20,7 @@ url = "https://www.powerlanguage.co.uk/wordle/"
 def get_hints(guess: str):
     """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
 
-    word = copy(check_word)
+    word = copy.copy(check_word)
     hints = {i: None for i in range(5)}
 
     for i, letter in enumerate(guess):
@@ -37,11 +37,11 @@ def get_hints(guess: str):
     return hints
 
 
-@dataclass
+@dataclasses.dataclass
 class LetterData:
     """Class for storing each letter's data"""
-    known_positions: set = field(default_factory=set)
-    impossible_positions: set = field(default_factory=set)
+    known_positions: set = dataclasses.field(default_factory=set)
+    impossible_positions: set = dataclasses.field(default_factory=set)
     min_count: int = 0
     count_frozen: bool = False
 
@@ -73,7 +73,7 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
 def eliminate(possible_words: list[str], guess: str, letters: dict[str, LetterData]):
     """Check every word in wordslist and remove it if it doesn't meet the requirements"""
 
-    retained_words = copy(possible_words)
+    retained_words = copy.copy(possible_words)
 
     for word in possible_words:
         for i, letter in enumerate(word):
@@ -106,16 +106,14 @@ def eliminate(possible_words: list[str], guess: str, letters: dict[str, LetterDa
 
 def colorize(guess: str, hints: dict[int, str]):
     """Color the guess word based on it's hints"""
-    init(autoreset=True)
+    colorama.init(autoreset=True)
     result = str()
 
     for i, hint in hints.items():
         letter = guess[i]
-        if hint == True: result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
-        elif hint == False:
-            result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
-        elif hint == None:
-            result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
+        if hint == True: result += f"{colorama.Fore.LIGHTGREEN_EX}{letter}{colorama.Fore.RESET}"
+        elif hint == False: result += f"{colorama.Fore.LIGHTYELLOW_EX}{letter}{colorama.Fore.RESET}"
+        elif hint == None: result += f"{colorama.Fore.LIGHTBLACK_EX}{letter}{colorama.Fore.RESET}"
 
     return result
 
@@ -125,8 +123,8 @@ def guess_word() -> list:
 
     guess = "ratio"
     hints = get_hints(guess)
-    letters = {letter: LetterData() for letter in list(ascii_lowercase)}
-    possible_words = copy(wordlist)
+    letters = {letter: LetterData() for letter in string.ascii_lowercase}
+    possible_words = copy.copy(wordlist)
     yield guess, hints
 
     while set(hints.values()) != {True}:
@@ -135,7 +133,7 @@ def guess_word() -> list:
         build_letters_data(letters, guess, hints)
         possible_words = eliminate(possible_words, guess, letters)
 
-        guess = choice(possible_words)
+        guess = random.choice(possible_words)
         hints = get_hints(guess)
 
         yield guess, hints
