@@ -2,8 +2,8 @@
 Guessing logic for Wordle
 """
 
-from copy import copy
 from colorama import init, Fore
+from copy import copy
 from dataclasses import dataclass, field
 from os import path
 # from playwright.sync_api import sync_playwright
@@ -159,7 +159,7 @@ def get_word():
 
 if __name__ == "__main__":
     print("\nChoose any five letter word and let the guesser guess your word\n")
-    print("Green: letter is in the word and in the righ position")
+    print("Green: letter is in the word and in the right position")
     print("Yellow: letter is in the word but in the wrong position")
     print("Gray: there is no more of the letter in the word")
 
