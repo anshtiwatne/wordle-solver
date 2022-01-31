@@ -2,24 +2,23 @@
 Guessing logic for Wordle
 """
 
-import colorama
 import copy
 import dataclasses
 import os
 import random
 import re
 import string
-# from playwright.sync_api import sync_playwright
+import colorama
+from playwright.sync_api import sync_playwright
 
-check_word = "empty"
+CHECK_WORD = "empty"
 abspath = os.path.join(os.path.dirname(__file__), "words.txt")
-wordlist = [word for word in open(abspath).read().split()]
-url = "https://www.powerlanguage.co.uk/wordle/"
+wordlist = list(open(abspath).read().split())
+URL = "https://www.powerlanguage.co.uk/wordle/"
 
 
 def get_hints(guess: str):
-    """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
-
+  """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
     word = copy.copy(check_word)
     hints = {i: None for i in range(5)}
 
@@ -49,20 +48,20 @@ class LetterData:
 def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
     """Take the hints from wordle and add data accordingly to each letter's LetterData object"""
 
-    yellows = dict()
+    yellows = {}
 
     for i, hint in hints.items():
         letter = guess[i]
 
         # letter is in the word and in the right position
-        if hint == True:
+        if hint is True:
             letters[letter].known_positions.add(i)
         # letter is in the word but not in the right position
-        elif hint == False:
+        elif hint is False:
             letters[letter].impossible_positions.add(i)
             yellows[letter] = yellows.get(letter, 0) + 1
         # there is no more of the letter in the word
-        elif hint == None:
+        elif hint is None:
             letters[letter].count_frozen = True
 
         # minimum count is positions in green + positions in yellow
@@ -84,7 +83,7 @@ def eliminate(possible_words: list[str], guess: str, letters: dict[str, LetterDa
             elif i in letters[letter].impossible_positions:
                 retained_words.remove(word)
                 break
-            elif letters[letter].count_frozen == True:
+            elif letters[letter].count_frozen is True:
                 if word.count(letter) != letters[letter].min_count:
                     retained_words.remove(word)
                     break
@@ -111,9 +110,12 @@ def colorize(guess: str, hints: dict[int, str]):
 
     for i, hint in hints.items():
         letter = guess[i]
-        if hint == True: result += f"{colorama.Fore.LIGHTGREEN_EX}{letter}{colorama.Fore.RESET}"
-        elif hint == False: result += f"{colorama.Fore.LIGHTYELLOW_EX}{letter}{colorama.Fore.RESET}"
-        elif hint == None: result += f"{colorama.Fore.LIGHTBLACK_EX}{letter}{colorama.Fore.RESET}"
+        if hint is True:
+            result += f"{colorama.Fore.LIGHTGREEN_EX}{letter}{colorama.Fore.RESET}"
+        elif hint is False:
+            result += f"{colorama.Fore.LIGHTYELLOW_EX}{letter}{colorama.Fore.RESET}"
+        elif hint is None:
+            result += f"{colorama.Fore.LIGHTBLACK_EX}{letter}{colorama.Fore.RESET}"
 
     return result
 
@@ -162,10 +164,6 @@ if __name__ == "__main__":
     print("Gray: there is no more of the letter in the word")
 
     while True:
-        try:
-            check_word = get_word()
-            for guess, hints in guess_word():
-                print(colorize(guess, hints))
-        except KeyboardInterrupt:
-            print("Exiting...")
-            break
+        check_word = get_word()
+        for guess, hints in guess_word():
+            print(colorize(guess, hints))
