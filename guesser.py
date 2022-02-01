@@ -13,9 +13,9 @@ from colorama import Fore
 # from playwright.sync_api import sync_playwright
 
 CHECK_WORD = "empty"
+URL = "https://www.powerlanguage.co.uk/wordle/"
 abspath = os.path.join(os.path.dirname(__file__), "words.txt")
 wordlist = list(open(abspath).read().split())
-URL = "https://www.powerlanguage.co.uk/wordle/"
 
 
 def get_hints(guess: str):
