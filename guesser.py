@@ -141,7 +141,7 @@ def get_word():
 def main() -> list:
     """Guess the word, for every incorrect gets additional data gained to make a new guess"""
 
-    guess = "ratio"
+    guess = "later"
     hints = get_hints(guess)
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
