@@ -14,14 +14,14 @@ from colorama import Fore
 
 CHECK_WORD = "empty"
 URL = "https://www.powerlanguage.co.uk/wordle/"
-abspath = os.path.join(os.path.dirname(__file__), "words.txt")
-wordlist = list(open(abspath).read().split())
+ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
+WORDLIST = list(open(ABSPATH).read().split())
 
 
 def get_hints(guess: str):
     """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
 
-    word = copy.copy(check_word)
+    word = copy.copy(CHECK_WORD)
     hints = {i: None for i in range(5)}
 
     for i, letter in enumerate(guess):
@@ -125,17 +125,17 @@ def colorize(guess: str, hints: dict[int, str]):
 def get_word():
     """Get the word for the guesses to check against"""
 
-    check_word = input("\nWord: ")
+    CHECK_WORD = input("\nWord: ")
 
-    while len(check_word) != 5:
+    while len(CHECK_WORD) != 5:
         print("Word must be 5 letters long")
-        check_word = input("\nTry again: ")
+        CHECK_WORD = input("\nTry again: ")
 
-    while check_word not in wordlist:
+    while CHECK_WORD not in WORDLIST:
         print("Word not in list")
-        check_word = input("\nTry again: ")
+        CHECK_WORD = input("\nTry again: ")
 
-    return check_word
+    return CHECK_WORD
 
 
 def main() -> list:
@@ -144,7 +144,7 @@ def main() -> list:
     guess = "ratio"
     hints = get_hints(guess)
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
-    possible_words = copy.copy(wordlist)
+    possible_words = copy.copy(WORDLIST)
     yield guess, hints
 
     while set(hints.values()) != {True}:
@@ -167,6 +167,6 @@ if __name__ == "__main__":
     print("Gray: there is no more of the letter in the word")
 
     while True:
-        check_word = get_word()
+        CHECK_WORD = get_word()
         for guess, hints in main():
             print(colorize(guess, hints))
