@@ -162,9 +162,10 @@ def main() -> list:
 
 if __name__ == "__main__":
     print("\nChoose any five letter word and let the guesser guess your word\n")
-    print("Green: letter is in the word and in the right position")
-    print("Yellow: letter is in the word but in the wrong position")
-    print("Gray: there is no more of the letter in the word")
+    print(
+    "Green: letter is in the word and in the right position\n"
+    "Yellow: letter is in the word but in the wrong position\n"
+    "Gray: there is no more of the letter in the word\n")
 
     while True:
         CHECK_WORD = get_word()
