@@ -2,6 +2,7 @@
 Guessing logic for Wordle
 """
 
+from __future__ import annotations # type hints not supported before python 3.9
 import copy
 import dataclasses
 import os
@@ -153,7 +154,8 @@ def main() -> list:
         build_letters_data(letters, guess, hints)
         possible_words = eliminate(possible_words, guess, letters)
 
-        if not possible_words: raise IndexError("No possible words to choose from")
+        if not possible_words:
+            raise IndexError("No possible words to choose from")
         guess = random.choice(possible_words)
         hints = get_hints(guess)
 
@@ -161,11 +163,11 @@ def main() -> list:
 
 
 if __name__ == "__main__":
-    print("\nChoose any five letter word and let the guesser guess your word\n")
     print(
-    "Green: letter is in the word and in the right position\n"
-    "Yellow: letter is in the word but in the wrong position\n"
-    "Gray: there is no more of the letter in the word\n")
+        "\nChoose any five letter word and let the guesser guess your word\n")
+    print("Green: letter is in the word and in the right position\n"
+          "Yellow: letter is in the word but in the wrong position\n"
+          "Gray: there is no more of the letter in the word\n")
 
     while True:
         CHECK_WORD = get_word()
