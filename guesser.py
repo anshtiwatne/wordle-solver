@@ -12,6 +12,7 @@ import string
 import colorama
 from colorama import Fore
 # from playwright.sync_api import sync_playwright
+# to be implemented later
 
 CHECK_WORD = "empty"
 URL = "https://www.powerlanguage.co.uk/wordle/"
@@ -35,6 +36,13 @@ def get_hints(guess: str):
             if hints[i] != True:
                 hints[i] = False
                 word = word.replace(letter, ".", 1)
+
+    return hints
+
+
+def solve_wordle(guess: str):
+    """Solve the current wordle using the guesser in a window"""
+    raise NotImplementedError("Not implemented yet")
 
     return hints
 
