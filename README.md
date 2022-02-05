@@ -23,11 +23,13 @@ Then based on each letter's match data words from the list of all possible words
 
 After the list of possible words is shortend a word is randomly picked (can be optimized in the future) to be the new guess to then get hints for and shorten the possiblities further.
 
-⬛⬛⬛🟨⬛ - later
+With the solution as "check":
 
-🟨⬛⬛🟩🟨 - epoch
+⬛⬛⬛🟨⬛ First guess is always later
 
-🟩🟩🟩🟩🟩 - check
+🟨⬛⬛🟩🟨 Second guess is epoch sice there's no more of l, a, t and r but there's an e somewhere else
+
+🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data.
 
 ## Contributing
 
