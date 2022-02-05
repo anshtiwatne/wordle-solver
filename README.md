@@ -25,11 +25,11 @@ After the list of possible words is shortend a word is randomly picked (can be o
 
 With the solution as "check":
 
-⬛⬛⬛🟨⬛ First guess is always later
+⬛⬛⬛🟨⬛ First guess is always later as it's statistically the best word to start with
 
 🟨⬛⬛🟩🟨 Second guess is epoch sice there's no more of l, a, t and r but there's an e somewhere else
 
-🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data.
+🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data
 
 ## Contributing
 
