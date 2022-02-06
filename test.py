@@ -1,3 +1,5 @@
+import random
+import statistics
 import unittest
 import guesser
 
@@ -44,6 +46,18 @@ class TestGuesser(unittest.TestCase):
             guesses.append(guess)
         last_guess = guesses[-1][0]
         self.assertEqual(guesser.CHECK_WORD, last_guess)
+
+    def test_average(self):
+        """Get the average guesses it takes to get to the solution"""
+
+        attempts = []
+        for _ in range(5):
+            guesser.CHECK_WORD = random.choice(guesser.WORDLIST)
+            guesses = len(list(guesser.guess_word()))
+            attempts.append(guesses)
+
+        tries = statistics.mean(attempts)
+        self.assertLessEqual(tries, 6)
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ Once the algorithm has hints for a guess, it converts them into match data (know
 
 Then based on each letter's match data words from the list of all possible words are removed therefore shortening the list.
 
-After the list of possible words is shortend a word is randomly picked (can be optimized in the future) to be the new guess to then get hints for and shorten the possiblities further.
+After the list of possible words is shortend a word is chosen through the choose_word function to be the new guess to then get hints for and shorten the possiblities further.
 
 With the solution as "check":
 
@@ -30,6 +30,27 @@ With the solution as "check":
 🟨⬛⬛🟩🟨 Second guess is epoch sice there's no more of l, a, t and r but there's an e somewhere else
 
 🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data
+
+On average for 25 random solutions the algorithm averaged 4.64 guesses to get the solution.
+
+## Choosing words
+
+Given a list of possible words, if you rank every word by how many letters it shares with every other word (how many words it can shuffle into), you'll get a word that best represents all of the possible words therefore increasing the amount of hints you get.
+
+```python
+shuffleable = {}
+
+def choose_word(possible_words: str):
+    for wordA in possible_words:
+        for wordB in possible_words:
+
+            if Counter(wordA) == Counter(wordB):
+                shuffleable[wordA] = shuffleable.get(wordA, 0) + 1
+
+    return max(shuffleable, key=shuffleable.get)
+```
+
+Running the above code on the list of every five letter word in english will give you **apers** a word that contains very common letters that appear a lot in other five letter words which should make it a really good first guess.
 
 ## Contributing
 

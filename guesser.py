@@ -164,7 +164,7 @@ def solve_wordle(guess: str):
 def guess_word():
     """Guess the word, for every incorrect gets additional data gained to make a new guess"""
 
-    guess = "later"
+    guess = "apers"
     hints = get_hints(guess)
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
