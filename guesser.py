@@ -1,16 +1,16 @@
 """
-Guessing logic for Wordle
+Guessing algorithm for Wordle
 """
+
+# pylint: disable=invalid-name, redefined-outer-name, multiple-statements
 
 import copy
 import dataclasses
 import os
-# import re
 import string
 from collections import Counter
 import colorama
 from colorama import Fore
-# from playwright.sync_api import sync_playwright
 
 CHECK_WORD = "empty"
 URL = "https://www.powerlanguage.co.uk/wordle/"
@@ -47,9 +47,9 @@ def get_hints(guess: str):
 
     for i, letter in enumerate(guess):
         if letter in word and guess[i] != word[i]:
-            if hints[i] != True:
-                hints[i] = False
-                word = word.replace(letter, ".", 1)
+            if hints[i]: continue
+            hints[i] = False
+            word = word.replace(letter, ".", 1)
 
     return hints
 
@@ -153,6 +153,7 @@ def colorize(guess: str, hints: dict):
     return result
 
 
+# pylint: disable=unused-argument, unreachable, undefined-loop-variable
 def solve_wordle(guess: str):
     """Solve the current wordle using the guesser in a window"""
     raise NotImplementedError("Not implemented yet")
