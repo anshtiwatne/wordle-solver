@@ -36,11 +36,11 @@ class TestGuesser(unittest.TestCase):
         })
 
     def test_guesses(self):
-        """Test the guesses from the main function"""
+        """Test the guesses from the guess_word function"""
 
         guesser.CHECK_WORD = "check"
         guesses = []
-        for guess in guesser.main():
+        for guess in guesser.guess_word():
             guesses.append(guess)
         last_guess = guesses[-1][0]
         self.assertEqual(guesser.CHECK_WORD, last_guess)
