@@ -9,11 +9,10 @@ class TestGuesser(unittest.TestCase):
 
     def test_hints(self):
         """Test the get_hints function"""
-
-        guesser.CHECK_WORD = "aabbb"
+        solution = "aabbb"
 
         guess = "aaabb"
-        self.assertEqual(guesser.get_hints(guess), {
+        self.assertEqual(guesser.generate_hints(guess, solution), {
             0: True,
             1: True,
             2: None,
@@ -21,7 +20,7 @@ class TestGuesser(unittest.TestCase):
             4: True
         })
         guess = "bbaaa"
-        self.assertEqual(guesser.get_hints(guess), {
+        self.assertEqual(guesser.generate_hints(guess, solution), {
             0: False,
             1: False,
             2: False,
@@ -29,7 +28,7 @@ class TestGuesser(unittest.TestCase):
             4: None
         })
         guess = "later"
-        self.assertEqual(guesser.get_hints(guess), {
+        self.assertEqual(guesser.generate_hints(guess, solution), {
             0: None,
             1: True,
             2: None,
