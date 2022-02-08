@@ -115,7 +115,7 @@ def choose_word(possible_words: list, randomize: bool = False):
     shuffleable = {}
     # The best next guess seems to be the one that can shuffle in the most other possible words
     # since this maximizes the amount of green and yellow hints you get
-   
+
     for wordA in possible_words:
         for wordB in possible_words:
             shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(
@@ -145,7 +145,6 @@ def colorize(guess: str, hints: dict):
 def scrape_hints(page: sync_api.Page, i: int, guess: str):
     """Scrape only the hints given a guess from the Wordle website"""
 
-    if i >= 5: raise IndexError("Ran out of attempts")
     page.type("#board", f"{guess}\n")
     page.wait_for_timeout(2000)
     local_storage_js = "JSON.stringify(localStorage)"
@@ -168,18 +167,20 @@ def scrape_hints(page: sync_api.Page, i: int, guess: str):
     return hints
 
 
-def guess_word(page: sync_api.Page):
+def guess_word(page: sync_api.Page=None):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
     guess = "apers" # statistically the best guess to start Wordle with
-    hints = scrape_hints(page, i, guess)
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
-    yield guess, hints
+    hints = scrape_hints(page, i, guess)
 
-    while set(hints.values()) != {True}:
+    yield i, guess, hints
+
+    while set(hints.values()) != {True} and i < 6:
         i += 1
+
         possible_words.remove(guess)
         build_letters_data(letters, guess, hints)
         possible_words = eliminate(possible_words, guess, letters)
@@ -194,11 +195,11 @@ def guess_word(page: sync_api.Page):
             guess = choose_word(possible_words, randomize=True)
             hints = scrape_hints(page, i, guess)
 
-        yield guess, hints
+        yield i, guess, hints
 
 
 def solve_wordle():
-    """Passes guesses from"""
+    """Pass guess from guess_word to the Wordle website"""
 
     with sync_api.sync_playwright() as sync:
         browser = sync.chromium.launch(headless=False)
@@ -207,8 +208,10 @@ def solve_wordle():
         page.click(".close-icon")
         page.focus("#board")
 
-        for guess, hints in guess_word(page):
-            print(colorize(guess, hints))
-
+        for i, guess, hints in guess_word(page):
+            if i == 5 and set(hints.values()) != {True}:
+                print("Ran out of attempts")
+                break
+            print(f"{i+1}. {colorize(guess, hints)}")
 
 if __name__ == "__main__": solve_wordle()
