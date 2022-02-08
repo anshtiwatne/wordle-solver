@@ -153,9 +153,7 @@ def scrape_hints(page: sync_api.Page, i: int, guess: str):
     evaluation = evaluations[i]
 
     if evaluation is None:
-        for _ in range(5):
-            page.keyboard.press("Backspace")
-            page.wait_for_timeout(75)
+        for _ in range(5): page.keyboard.press("Backspace")
         return None
 
     hints = {i: None for i in range(5)}
