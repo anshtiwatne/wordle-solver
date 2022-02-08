@@ -4,12 +4,11 @@ Guessing algrorithm for Wordle written in Python
 
 ## Installation & Usage
 
-Either download and run the published exe or install the required modules and run guesser.py manually. Then input a word for the algorithm to guess (it only uses the word provided to check against and get hints).
+Either download and run the published exe or run guesser.py maunally
 
 ```bash
 python3 guesser.py
 
-Word: check
 later
 epoch
 check
@@ -35,22 +34,20 @@ On average for 25 random solutions the algorithm averaged 4.64 guesses to get th
 
 ## Choosing words
 
-Given a list of possible words, if you rank every word by how many letters it shares with every other word (how many words it can shuffle into), you'll get a word that best represents all of the possible words therefore increasing the amount of hints you get.
+Given a list of possible words, if you rank every word by what ratio match it is to every other word, you'll get a word that best represents all of the possible words therefore reducing the size of possible words.
 
 ```python
-shuffleable = {}
+def choose_word(possible_words):
 
-def choose_word(possible_words: str):
     for wordA in possible_words:
         for wordB in possible_words:
-
-            if Counter(wordA) == Counter(wordB):
-                shuffleable[wordA] = shuffleable.get(wordA, 0) + 1
+            shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(
+                None, wordA, wordB).ratio()
 
     return max(shuffleable, key=shuffleable.get)
 ```
 
-Running the above code on the list of every five letter word in english will give you **apers** a word that contains very common letters that appear a lot in other five letter words which should make it a really good first guess.
+Running the above code on the list of every five letter word in english will give you **later** a word that contains very common letters that appear a lot in other five letter words which should make it a really good first guess.
 
 ## Contributing
 
