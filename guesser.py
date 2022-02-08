@@ -6,14 +6,23 @@ Guessing logic for Wordle
 
 import copy
 import dataclasses
+import json
+import os
 import random
 from difflib import SequenceMatcher
+import string
 import colorama
 from colorama import Fore
+import playwright.sync_api as sync_api
+
+URL = "https://www.powerlanguage.co.uk/wordle/"
+ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
+WORDLIST = list(open(ABSPATH, encoding="utf-8").read().split())
 
 
 def generate_hints(guess: str, solution: str):
     """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
+    # Extra function, not currently used
 
     word = copy.copy(solution)
     hints = {i: None for i in range(5)}
@@ -106,16 +115,18 @@ def choose_word(possible_words: list, randomize: bool = False):
     shuffleable = {}
     # The best next guess seems to be the one that can shuffle in the most other possible words
     # since this maximizes the amount of green and yellow hints you get
-    
+   
     for wordA in possible_words:
         for wordB in possible_words:
-            shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(None, wordA, wordB).ratio()
+            shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(
+                None, wordA, wordB).ratio()
 
     return max(shuffleable, key=shuffleable.get)
 
 
 def colorize(guess: str, hints: dict):
     """Color the guess word based on it's hints"""
+
     colorama.init(autoreset=True)
     result = str()
 
@@ -129,3 +140,75 @@ def colorize(guess: str, hints: dict):
             result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
 
     return result
+
+
+def scrape_hints(page: sync_api.Page, i: int, guess: str):
+    """Scrape only the hints given a guess from the Wordle website"""
+
+    if i >= 5: raise IndexError("Ran out of attempts")
+    page.type("#board", f"{guess}\n")
+    page.wait_for_timeout(2000)
+    local_storage_js = "JSON.stringify(localStorage)"
+    local_storage = json.loads(page.evaluate(local_storage_js))
+    evaluations = json.loads(local_storage["gameState"])["evaluations"]
+    evaluation = evaluations[i]
+
+    if evaluation is None:
+        for _ in range(5):
+            page.keyboard.press("Backspace")
+            page.wait_for_timeout(75)
+        return None
+
+    hints = {i: None for i in range(5)}
+    for i, element in enumerate(evaluation):
+        if element == "correct": hints[i] = True
+        elif element == "present": hints[i] = False
+        elif element == "absent": hints[i] = None
+
+    return hints
+
+
+def guess_word(page: sync_api.Page):
+    """Yeilds a guess until the guess matches the solution"""
+
+    i = int()
+    guess = "apers" # statistically the best guess to start Wordle with
+    hints = scrape_hints(page, i, guess)
+    letters = {letter: LetterData() for letter in string.ascii_lowercase}
+    possible_words = copy.copy(WORDLIST)
+    yield guess, hints
+
+    while set(hints.values()) != {True}:
+        i += 1
+        possible_words.remove(guess)
+        build_letters_data(letters, guess, hints)
+        possible_words = eliminate(possible_words, guess, letters)
+
+        if not possible_words:
+            raise IndexError("No possible words left")
+        guess = choose_word(possible_words, randomize=True)
+        hints = scrape_hints(page, i, guess)
+
+        while hints is None:
+            possible_words.remove(guess)
+            guess = choose_word(possible_words, randomize=True)
+            hints = scrape_hints(page, i, guess)
+
+        yield guess, hints
+
+
+def solve_wordle():
+    """Passes guesses from"""
+
+    with sync_api.sync_playwright() as sync:
+        browser = sync.chromium.launch(headless=False)
+        page = browser.new_page()
+        page.goto(URL)
+        page.click(".close-icon")
+        page.focus("#board")
+
+        for guess, hints in guess_word(page):
+            print(colorize(guess, hints))
+
+
+if __name__ == "__main__": solve_wordle()
