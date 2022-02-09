@@ -34,20 +34,26 @@ On average for 25 random solutions the algorithm averaged 4.64 guesses to get th
 
 ## Choosing words
 
-Given a list of possible words, if you rank every word by what ratio match it is to every other word, you'll get a word that best represents all of the possible words therefore reducing the size of possible words.
+Given a list of possible words, if you rank every word by what ratio match it is to every guess made till now, you'll get a word that adds the maximum amount of new letters and positions to the existing pool of letters.
 
 ```python
-def choose_word(possible_words):
+def choose_word(guesses: list, possible_words: list, randomize: bool = False):
+    """Get an optimized choice of a word to be the next guess from the possible words"""
 
-    for wordA in possible_words:
-        for wordB in possible_words:
-            shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(
-                None, wordA, wordB).ratio()
+    if randomize: return random.choice(possible_words)
+    comparison = {}
+    # The best next guess seems to be the one that differs most from the previous guesses
+    # since this diversifys the letters used therefore maximizing the hints received
 
-    return max(shuffleable, key=shuffleable.get)
+    for word in possible_words:
+        for guess in guesses:
+            # get the similarity between the word and the guess
+            comparison[word] = comparison.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
+        # number of total letters - number of unique letters
+        comparison[word] = comparison.get(word, 0) + len(word) - len(set(word))
+
+    return min(comparison, key=comparison.get)
 ```
-
-Running the above code on the list of every five letter word in english will give you **later** a word that contains very common letters that appear a lot in other five letter words which should make it a really good first guess.
 
 ## Contributing
 

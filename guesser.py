@@ -112,18 +112,18 @@ def choose_word(guesses: list, possible_words: list, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
     if randomize: return random.choice(possible_words)
-    comparable = {}
+    comparison = {}
     # The best next guess seems to be the one that differs most from the previous guesses
     # since this diversifys the letters used therefore maximizing the hints received
 
     for word in possible_words:
         for guess in guesses:
             # get the similarity between the word and the guess
-            comparable[word] = comparable.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
+            comparison[word] = comparison.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
         # number of total letters - number of unique letters
-        comparable[word] = comparable.get(word, 0) + len(word) - len(set(word))
+        comparison[word] = comparison.get(word, 0) + len(word) - len(set(word))
 
-    return min(comparable, key=comparable.get)
+    return min(comparison, key=comparison.get)
 
 
 def colorize(guess: str, hints: dict):
