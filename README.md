@@ -24,7 +24,7 @@ After the list of possible words is shortend a word is chosen through the choose
 
 With the solution as "check":
 
-⬛⬛⬛🟨⬛ First guess is always "later" as it's statistically the best word to start with
+⬛⬛⬛🟨⬛ First guess is later in this case
 
 🟨⬛⬛🟩🟨 Second guess is epoch sice there's no more of l, a, t and r but there's an e somewhere else
 
