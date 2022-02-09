@@ -1,8 +1,8 @@
 """
-Script to guess Wordle based on scraped hints
+Algorithm to solve Wordle
 """
-# running the script on Wordle might spoil the game for you
-# pylint: disable=invalid-name, redefined-outer-name, multiple-statements
+
+# Running this might spoil today's Wordle for you
 
 import copy
 import dataclasses
@@ -21,8 +21,8 @@ WORDLIST = list(open(ABSPATH, encoding="utf-8").read().split())
 
 
 def generate_hints(guess: str, solution: str):
-    """Replicate wordle behaviour: Check a guess against the answer and only returns hints"""
-    # Extra function, not currently used
+    """Replicate Wordle behaviour: Check a guess against the solution and only returns hints"""
+    # Extra function to generate hints locally for testing
 
     word = copy.copy(solution)
     hints = {i: None for i in range(5)}
@@ -43,35 +43,35 @@ def generate_hints(guess: str, solution: str):
 
 @dataclasses.dataclass
 class LetterData:
-    """Class for storing each letter's data"""
+    """Class for storing each letter's match data"""
+
     known_positions: set = dataclasses.field(default_factory=set)
     impossible_positions: set = dataclasses.field(default_factory=set)
     min_count: int = 0
     count_frozen: bool = False
 
 
-def build_letters_data(letters: dict, guess: str, hints: dict):
-    """Take the hints from wordle and add data accordingly to each letter's LetterData object"""
+def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
+    """Take the hints from Wordle and update data to each letter's LetterData object"""
 
     yellows = {}
 
     for i, hint in hints.items():
         letter = guess[i]
 
-        # letter is in the word and in the right position
+        # green - letter is in the word and in the right position
         if hint is True:
             letters[letter].known_positions.add(i)
-        # letter is in the word but not in the right position
+        # yellow - letter is in the word but not in the right position
         elif hint is False:
             letters[letter].impossible_positions.add(i)
             yellows[letter] = yellows.get(letter, 0) + 1
-        # there is no more of the letter in the word
+        # gray - there is no more of the letter in the word
         elif hint is None:
             letters[letter].count_frozen = True
 
-        # minimum count is positions in green + positions in yellow
-        letters[letter].min_count = len(
-            letters[letter].known_positions) + yellows.get(letter, 0)
+        # min count of the letter: positions in green + positions in yellow
+        letters[letter].min_count = len(letters[letter].known_positions) + yellows.get(letter, 0)
 
 
 def eliminate(possible_words: list, guess: str, letters: dict):
@@ -108,24 +108,26 @@ def eliminate(possible_words: list, guess: str, letters: dict):
     return retained_words
 
 
-def choose_word(possible_words: list, randomize: bool = False):
+def choose_word(guesses: list, possible_words: list, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
     if randomize: return random.choice(possible_words)
-    shuffleable = {}
-    # The best next guess seems to be the one that can shuffle in the most other possible words
-    # since this maximizes the amount of green and yellow hints you get
+    comparable = {}
+    # The best next guess seems to be the one that differs most from the previous guesses
+    # since this diversifys the letters used therefore maximizing the hints received
 
-    for wordA in possible_words:
-        for wordB in possible_words:
-            shuffleable[wordA] = shuffleable.get(wordA, 0) + SequenceMatcher(
-                None, wordA, wordB).ratio()
+    for word in possible_words:
+        for guess in guesses:
+            # get the similarity between the word and the guess
+            comparable[word] = comparable.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
+        # number of total letters - number of unique letters
+        comparable[word] = comparable.get(word, 0) + len(word) - len(set(word))
 
-    return max(shuffleable, key=shuffleable.get)
+    return min(comparable, key=comparable.get)
 
 
 def colorize(guess: str, hints: dict):
-    """Color the guess word based on it's hints"""
+    """Color the guess word green yellow and gray based on it's hints"""
 
     colorama.init(autoreset=True)
     result = str()
@@ -173,6 +175,7 @@ def guess_word(page: sync_api.Page=None):
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
     hints = scrape_hints(page, i, guess)
+    guesses = [guess]
 
     yield i, guess, hints
 
@@ -185,13 +188,14 @@ def guess_word(page: sync_api.Page=None):
 
         if not possible_words:
             raise IndexError("No possible words left")
-        guess = choose_word(possible_words, randomize=True)
+        guess = choose_word(guesses, possible_words)
         hints = scrape_hints(page, i, guess)
 
         while hints is None:
             possible_words.remove(guess)
-            guess = choose_word(possible_words, randomize=True)
+            guess = choose_word(guesses, possible_words)
             hints = scrape_hints(page, i, guess)
+        guesses.append(guess)
 
         yield i, guess, hints
 
@@ -211,5 +215,6 @@ def solve_wordle():
                 print("Ran out of attempts")
                 break
             print(f"{i+1}. {colorize(guess, hints)}")
+
 
 if __name__ == "__main__": solve_wordle()
