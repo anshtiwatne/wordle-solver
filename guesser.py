@@ -171,7 +171,7 @@ def guess_word(page: sync_api.Page=None):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
-    guess = "apers" # statistically the best guess to start Wordle with
+    guess = "crane" # statistically the best guess to start Wordle with
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
     hints = scrape_hints(page, i, guess)
@@ -200,7 +200,7 @@ def guess_word(page: sync_api.Page=None):
         yield i, guess, hints
 
 
-def solve_wordle():
+def solve_wordle(hard_mode: bool = False):
     """Pass guess from guess_word to the Wordle website"""
 
     with sync_api.sync_playwright() as sync:
@@ -208,7 +208,11 @@ def solve_wordle():
         page = browser.new_page()
         page.goto(URL)
         page.click(".close-icon")
-        page.focus("#board")
+
+        if hard_mode:
+            page.click("#settings-button")
+            page.click("#hard-mode")
+            page.click("#settings-button")
 
         for i, guess, hints in guess_word(page):
             if i == 5 and set(hints.values()) != {True}:
@@ -217,4 +221,4 @@ def solve_wordle():
             print(f"{i+1}. {colorize(guess, hints)}")
 
 
-if __name__ == "__main__": solve_wordle()
+if __name__ == "__main__": solve_wordle(hard_mode=False)
