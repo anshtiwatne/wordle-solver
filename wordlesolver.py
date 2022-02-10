@@ -48,7 +48,6 @@ def solve_wordle(hard_mode: bool = False):
         if hard_mode:
             page.click("#settings-button")
             page.click("#hard-mode")
-            page.click("#dark-theme")
             page.click("[icon=close]:visible")
 
         for i, guess, hints in wordguesser.guess_word(page, get_hints):

@@ -14,7 +14,7 @@ from colorama import Fore
 import playwright.sync_api as sync_api
 
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
-WORDLIST = list(open(ABSPATH, encoding="utf-8").read().split())
+WORDLIST = set(open(ABSPATH, encoding="utf-8").read().split())
 
 
 def generate_hints(guess: str, solution: str):
