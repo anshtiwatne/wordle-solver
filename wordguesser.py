@@ -72,7 +72,7 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
             letters[letter].known_positions) + yellows.get(letter, 0)
 
 
-def eliminate(possible_words: list, guess: str, letters: dict):
+def eliminate(possible_words: set, guess: str, letters: dict):
     """Check every word in wordslist and remove it if it doesn't meet the requirements"""
 
     retained_words = copy.copy(possible_words)
@@ -106,7 +106,7 @@ def eliminate(possible_words: list, guess: str, letters: dict):
     return retained_words
 
 
-def choose_word(guesses: list, possible_words: list, randomize: bool = False):
+def choose_word(guesses: set, possible_words: set, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
     if randomize: return random.choice(possible_words)
@@ -151,7 +151,7 @@ def guess_word(page: sync_api.Page, get_hints: BuiltinFunctionType):
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
     hints = get_hints(page, i, guess)
-    guesses = [guess]
+    guesses = {guess}
 
     yield i, guess, hints
 
@@ -171,6 +171,6 @@ def guess_word(page: sync_api.Page, get_hints: BuiltinFunctionType):
             possible_words.remove(guess)
             guess = choose_word(guesses, possible_words)
             hints = get_hints(page, i, guess)
-        guesses.append(guess)
+        guesses.add(guess)
 
         yield i, guess, hints
