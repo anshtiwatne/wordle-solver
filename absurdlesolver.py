@@ -6,7 +6,7 @@ Script to run guesser on Wordle
 
 import json
 import playwright.sync_api as sync_api
-import guesser
+import wordguesser
 
 URL = "https://qntm.org/files/absurdle/absurdle.html"
 
@@ -42,20 +42,19 @@ def solve_absurdle(hard_mode: bool = False):
         browser = sync.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(URL)
-        #page.click(".close-icon")
         get_hints = scrape_hints
 
         if hard_mode:
-            page.click("#settings-button")
-            page.click("#hard-mode")
-            page.click("#settings-button")
+            page.click("text=\ufe0f")
+            page.click("#hardModeCheckbox")
+            page.click("text=\u2715")
 
-        for i, guess, hints in guesser.guess_word(page, get_hints):
+        for i, guess, hints in wordguesser.guess_word(page, get_hints):
             if i == 5 and set(hints.values()) != {True}:
                 print("Ran out of attempts")
                 break
-            print(f"{i+1}. {guesser.colorize(guess, hints)}")
+            print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
 
 
 if __name__ == "__main__":
-    solve_absurdle(hard_mode=False)
+    solve_absurdle(hard_mode=True)

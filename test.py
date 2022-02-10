@@ -2,11 +2,10 @@
 Work in Progress
 """
 
-
 import random
 import statistics
 import unittest
-import guesser
+import wordguesser
 
 
 class TestGuesser(unittest.TestCase):
@@ -17,7 +16,7 @@ class TestGuesser(unittest.TestCase):
         solution = "aabbb"
 
         guess = "aaabb"
-        self.assertEqual(guesser.generate_hints(guess, solution), {
+        self.assertEqual(wordguesser.generate_hints(guess, solution), {
             0: True,
             1: True,
             2: None,
@@ -25,7 +24,7 @@ class TestGuesser(unittest.TestCase):
             4: True
         })
         guess = "bbaaa"
-        self.assertEqual(guesser.generate_hints(guess, solution), {
+        self.assertEqual(wordguesser.generate_hints(guess, solution), {
             0: False,
             1: False,
             2: False,
@@ -33,7 +32,7 @@ class TestGuesser(unittest.TestCase):
             4: None
         })
         guess = "later"
-        self.assertEqual(guesser.generate_hints(guess, solution), {
+        self.assertEqual(wordguesser.generate_hints(guess, solution), {
             0: None,
             1: True,
             2: None,
@@ -44,20 +43,20 @@ class TestGuesser(unittest.TestCase):
     def test_guesses(self):
         """Test the guesses from the guess_word function"""
 
-        guesser.CHECK_WORD = "check"
+        wordguesser.CHECK_WORD = "check"
         guesses = []
-        for guess in guesser.guess_word():
+        for guess in wordguesser.guess_word():
             guesses.append(guess)
         last_guess = guesses[-1][0]
-        self.assertEqual(guesser.CHECK_WORD, last_guess)
+        self.assertEqual(wordguesser.CHECK_WORD, last_guess)
 
     def test_average(self):
         """Get the average guesses it takes to get to the solution"""
 
         attempts = []
         for _ in range(5):
-            guesser.CHECK_WORD = random.choice(guesser.WORDLIST)
-            guesses = len(list(guesser.guess_word()))
+            wordguesser.CHECK_WORD = random.choice(wordguesser.WORDLIST)
+            guesses = len(list(wordguesser.guess_word()))
             attempts.append(guesses)
 
         tries = statistics.mean(attempts)

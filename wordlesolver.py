@@ -6,7 +6,7 @@ Script to run guesser on Wordle
 
 import json
 import playwright.sync_api as sync_api
-import guesser
+import wordguesser
 
 URL = "https://www.powerlanguage.co.uk/wordle/"
 
@@ -48,14 +48,15 @@ def solve_wordle(hard_mode: bool = False):
         if hard_mode:
             page.click("#settings-button")
             page.click("#hard-mode")
-            page.click("#settings-button")
+            page.click("#dark-theme")
+            page.click("[icon=close]:visible")
 
-        for i, guess, hints in guesser.guess_word(page, get_hints):
+        for i, guess, hints in wordguesser.guess_word(page, get_hints):
             if i == 5 and set(hints.values()) != {True}:
                 print("Ran out of attempts")
                 break
-            print(f"{i+1}. {guesser.colorize(guess, hints)}")
+            print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
 
 
 if __name__ == "__main__":
-    solve_wordle(hard_mode=False)
+    solve_wordle(hard_mode=True)
