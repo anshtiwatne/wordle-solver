@@ -1,21 +1,18 @@
 """
-Algorithm to solve Wordle
+Module to guess Wordle words
 """
-
-# Running this might spoil today's Wordle for you
 
 import copy
 import dataclasses
-import json
 import os
 import random
 from difflib import SequenceMatcher
 import string
+from types import BuiltinFunctionType
 import colorama
 from colorama import Fore
 import playwright.sync_api as sync_api
 
-URL = "https://www.powerlanguage.co.uk/wordle/"
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
 WORDLIST = list(open(ABSPATH, encoding="utf-8").read().split())
 
@@ -52,7 +49,7 @@ class LetterData:
 
 
 def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
-    """Take the hints from Wordle and update data to each letter's LetterData object"""
+    """Take the hints from Wordle and update each letter's LetterData object"""
 
     yellows = {}
 
@@ -71,7 +68,8 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
             letters[letter].count_frozen = True
 
         # min count of the letter: positions in green + positions in yellow
-        letters[letter].min_count = len(letters[letter].known_positions) + yellows.get(letter, 0)
+        letters[letter].min_count = len(
+            letters[letter].known_positions) + yellows.get(letter, 0)
 
 
 def eliminate(possible_words: list, guess: str, letters: dict):
@@ -119,7 +117,8 @@ def choose_word(guesses: list, possible_words: list, randomize: bool = False):
     for word in possible_words:
         for guess in guesses:
             # get the similarity between the word and the guess
-            comparison[word] = comparison.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
+            comparison[word] = comparison.get(word, 0) + SequenceMatcher(
+                None, word, guess).ratio()
         # number of total letters - number of unique letters
         comparison[word] = comparison.get(word, 0) + len(word) - len(set(word))
 
@@ -144,37 +143,14 @@ def colorize(guess: str, hints: dict):
     return result
 
 
-def scrape_hints(page: sync_api.Page, i: int, guess: str):
-    """Scrape only the hints given a guess from the Wordle website"""
-
-    page.type("#board", f"{guess}\n")
-    page.wait_for_timeout(2000)
-    local_storage_js = "JSON.stringify(localStorage)"
-    local_storage = json.loads(page.evaluate(local_storage_js))
-    evaluations = json.loads(local_storage["gameState"])["evaluations"]
-    evaluation = evaluations[i]
-
-    if evaluation is None:
-        for _ in range(5): page.keyboard.press("Backspace")
-        return None
-
-    hints = {i: None for i in range(5)}
-    for i, element in enumerate(evaluation):
-        if element == "correct": hints[i] = True
-        elif element == "present": hints[i] = False
-        elif element == "absent": hints[i] = None
-
-    return hints
-
-
-def guess_word(page: sync_api.Page=None):
+def guess_word(page: sync_api.Page, get_hints: BuiltinFunctionType):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
-    guess = "crane" # statistically the best guess to start Wordle with
+    guess = "crane"  # statistically the best guess to start Wordle with
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
-    hints = scrape_hints(page, i, guess)
+    hints = get_hints(page, i, guess)
     guesses = [guess]
 
     yield i, guess, hints
@@ -189,36 +165,12 @@ def guess_word(page: sync_api.Page=None):
         if not possible_words:
             raise IndexError("No possible words left")
         guess = choose_word(guesses, possible_words)
-        hints = scrape_hints(page, i, guess)
+        hints = get_hints(page, i, guess)
 
         while hints is None:
             possible_words.remove(guess)
             guess = choose_word(guesses, possible_words)
-            hints = scrape_hints(page, i, guess)
+            hints = get_hints(page, i, guess)
         guesses.append(guess)
 
         yield i, guess, hints
-
-
-def solve_wordle(hard_mode: bool = False):
-    """Pass guess from guess_word to the Wordle website"""
-
-    with sync_api.sync_playwright() as sync:
-        browser = sync.chromium.launch(headless=False)
-        page = browser.new_page()
-        page.goto(URL)
-        page.click(".close-icon")
-
-        if hard_mode:
-            page.click("#settings-button")
-            page.click("#hard-mode")
-            page.click("#settings-button")
-
-        for i, guess, hints in guess_word(page):
-            if i == 5 and set(hints.values()) != {True}:
-                print("Ran out of attempts")
-                break
-            print(f"{i+1}. {colorize(guess, hints)}")
-
-
-if __name__ == "__main__": solve_wordle(hard_mode=False)
