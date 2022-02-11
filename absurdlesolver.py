@@ -12,13 +12,16 @@ URL = "https://qntm.org/files/absurdle/absurdle.html"
 def scrape_hints(page: sync_api.Page, i: int, guess: str):
     """Scrape only the hints given a guess from the Absurdle website"""
 
+    # enter a guess and get the hint's inner html
     page.type(".absurdle__box1", f"{guess}\n")
     html = page.inner_html(f"tr >> nth={i}")
 
+    # if the guess is not in the list, delete it and return None as hints
     if "--input" in html:
         for _ in range(5): page.keyboard.press("Backspace")
         return None
 
+    # convert the inner html to hints in a dictionary
     evaluations = html.split("</td>")[:-1]
     hints = {i: None for i in range(5)}
     for pos, _ in enumerate(guess):
@@ -39,11 +42,13 @@ def solve_absurdle(hard_mode: bool = False):
         page = browser.new_page()
         page.goto(URL)
 
+        # enable hard mode from settings if requested
         if hard_mode:
             page.click("text=\ufe0f")
             page.click("#hardModeCheckbox")
             page.click("text=\u2715")
 
+        # printing the colorized guesses to the terminal
         for i, guess, hints in wordguesser.guess_word(scrape_hints, page):
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
             if set(hints.values()) == {True}: page.wait_for_timeout(2000)
