@@ -4,7 +4,7 @@ Script to run guesser on Wordle
 
 # RUNNING THIS MIGHT SPOIL TODAY'S WORDLE FOR YOU
 
-import json
+import re
 import playwright.sync_api as sync_api
 import wordguesser
 
@@ -12,25 +12,23 @@ URL = "https://qntm.org/files/absurdle/absurdle.html"
 
 
 def scrape_hints(page: sync_api.Page, i: int, guess: str):
-    """Scrape only the hints given a guess from the Wordle website"""
+    """Scrape only the hints given a guess from the Absurdle website"""
 
     page.type(".absurdle__box1", f"{guess}\n")
-    page.wait_for_timeout(2000)
-    local_storage_js = "JSON.stringify(localStorage)"
-    local_storage = json.loads(page.evaluate(local_storage_js))
-    evaluations = json.loads(local_storage["gameState"])["evaluations"]
-    evaluation = evaluations[i]
+    html = page.inner_html(f"tr >> nth={i}")
 
-    if evaluation is None:
-        for _ in range(5):
-            page.keyboard.press("Backspace")
+    if "--input" in html:
+        for _ in range(5): page.keyboard.press("Backspace")
         return None
 
+    evaluations = html.split("</td>")[:-1]
     hints = {i: None for i in range(5)}
-    for i, element in enumerate(evaluation):
-        if element == "correct": hints[i] = True
-        elif element == "present": hints[i] = False
-        elif element == "absent": hints[i] = None
+    for pos, _ in enumerate(guess):
+        hint = re.search(r"--([a-z].*)\"", evaluations[pos])[1]
+
+        if hint == "exact": hints[pos] = True
+        elif hint == "inexact": hints[pos] = False
+        elif hint == "wrong": hints[pos] = None
 
     return hints
 
@@ -49,10 +47,8 @@ def solve_absurdle(hard_mode: bool = False):
             page.click("text=\u2715")
 
         for i, guess, hints in wordguesser.guess_word(scrape_hints, page):
-            if i == 5 and set(hints.values()) != {True}:
-                print("Ran out of attempts")
-                break
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
+            if set(hints.values()) == {True}: page.wait_for_timeout(2000)
 
 
 if __name__ == "__main__":
