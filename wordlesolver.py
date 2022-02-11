@@ -19,8 +19,7 @@ def scrape_hints(page: sync_api.Page, i: int, guess: str):
     html = page.inner_html(f".row >> nth={i}")
 
     if "evaluation" not in html:
-        for _ in range(5):
-            page.keyboard.press("Backspace")
+        for _ in range(5): page.keyboard.press("Backspace")
         return None
     
     evaluations = html.split("</game-tile>")[:-1]
