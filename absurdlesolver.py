@@ -1,8 +1,6 @@
 """
-Script to run guesser on Wordle
+Script to run guesser on Absurdle
 """
-
-# RUNNING THIS MIGHT SPOIL TODAY'S WORDLE FOR YOU
 
 import re
 import playwright.sync_api as sync_api

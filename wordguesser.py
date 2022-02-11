@@ -109,7 +109,7 @@ def eliminate(possible_words: set, guess: str, letters: dict):
 def choose_word(guesses: set, possible_words: set, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
-    if randomize: return random.choice(possible_words)
+    if randomize: return random.choice(list(possible_words))
     comparison = {}
     # The best next guess seems to be the one that differs most from the previous guesses
     # since this diversifys the letters used therefore maximizing the hints received
@@ -164,7 +164,7 @@ def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None):
 
         if not possible_words:
             raise IndexError("No possible words left")
-        guess = choose_word(guesses, possible_words)
+        guess = choose_word(guesses, possible_words, randomize=False)
         hints = get_hints(page, i, guess)
 
         while hints is None:
