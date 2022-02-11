@@ -5,7 +5,7 @@ Script to run guesser on Wordle
 # RUNNING THIS MIGHT SPOIL TODAY'S WORDLE FOR YOU
 
 import re
-import playwright.sync_api as sync_api
+from playwright import sync_api
 import wordguesser
 
 URL = "https://www.nytimes.com/games/wordle/index.html"
