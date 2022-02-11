@@ -41,7 +41,9 @@ def solve_wordle(hard_mode: bool = False):
         browser = sync.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(URL)
-        page.click(".close-icon")
+
+        if page.is_visible(".close-icon"):
+            page.click(".close-icon")
 
         if hard_mode:
             page.click("#settings-button")
