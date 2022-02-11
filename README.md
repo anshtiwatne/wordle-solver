@@ -4,43 +4,44 @@ Guessing algrorithm for Wordle written in Python
 
 ## Installation & Usage
 
-Either download and run the published exe or run guesser.py maunally
+Clone the repository and run either solver scripts
 
 ```bash
-python3 guesser.py
+python3 wordlesolver.py
+# or python3 absurdlesolver.py
 
-later
-epoch
-check
+crane
+perch
+ulcer
 ```
 
 ## How it works
 
-Once the algorithm has hints for a guess, it converts them into match data (known positions, impossible positions, minimum count and if there could be any more of the letter) for every letter in the alphablet which.
+Once the algorithm has hints for a guess, it converts them into match data (known positions, impossible positions, minimum count and if there could be any more of the letter) for every letter in the alphablet.
 
-Then based on each letter's match data words from the list of all possible words are removed therefore shortening the list.
+Then based on each letter's match data words that won't be possible are removed.
 
 After the list of possible words is shortend a word is chosen through the choose_word function to be the new guess to then get hints for and shorten the possiblities further.
 
-With the solution as "check":
+With the solution as "ulcer":
 
-⬛⬛⬛🟨⬛ First guess is later in this case
+🟨🟨⬛⬛🟨 First guess is always crane (statistically the best)
 
-🟨⬛⬛🟩🟨 Second guess is epoch sice there's no more of l, a, t and r but there's an e somewhere else
+⬛🟨🟨🟨⬛ Second guess is perch sice there's no more of a or e but there's c, r and e somewhere else
 
 🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data
 
-On average for 25 random solutions the algorithm averaged 4.64 guesses to get the solution.
+For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
 
 ## Choosing words
 
-Given a list of possible words, if you rank every word by what ratio match it is to every guess made till now, you'll get a word that adds the maximum amount of new letters and positions to the existing pool of letters.
+Given a list of possible words, if you rank every word by what ratio match it is to every guess made till now and choose the one with the lowest rank, you'll get a word that adds the maximum amount of new letters and positions to the existing pool of letters.
 
 ```python
-def choose_word(guesses: list, possible_words: list, randomize: bool = False):
+def choose_word(guesses: set, possible_words: set, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
-    if randomize: return random.choice(possible_words)
+    if randomize: return random.choice(list(possible_words))
     comparison = {}
     # The best next guess seems to be the one that differs most from the previous guesses
     # since this diversifys the letters used therefore maximizing the hints received
@@ -48,7 +49,8 @@ def choose_word(guesses: list, possible_words: list, randomize: bool = False):
     for word in possible_words:
         for guess in guesses:
             # get the similarity between the word and the guess
-            comparison[word] = comparison.get(word, 0) + SequenceMatcher(None, word, guess).ratio()
+            comparison[word] = comparison.get(word, 0) + SequenceMatcher(
+                None, word, guess).ratio()
         # number of total letters - number of unique letters
         comparison[word] = comparison.get(word, 0) + len(word) - len(set(word))
 
