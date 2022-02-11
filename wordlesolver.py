@@ -4,11 +4,11 @@ Script to run guesser on Wordle
 
 # RUNNING THIS MIGHT SPOIL TODAY'S WORDLE FOR YOU
 
-import json
+import re
 import playwright.sync_api as sync_api
 import wordguesser
 
-URL = "https://www.powerlanguage.co.uk/wordle/"
+URL = "https://www.nytimes.com/games/wordle/index.html"
 
 
 def scrape_hints(page: sync_api.Page, i: int, guess: str):
@@ -16,21 +16,21 @@ def scrape_hints(page: sync_api.Page, i: int, guess: str):
 
     page.type("#board", f"{guess}\n")
     page.wait_for_timeout(2000)
-    local_storage_js = "JSON.stringify(localStorage)"
-    local_storage = json.loads(page.evaluate(local_storage_js))
-    evaluations = json.loads(local_storage["gameState"])["evaluations"]
-    evaluation = evaluations[i]
+    html = page.inner_html(f".row >> nth={i}")
 
-    if evaluation is None:
+    if "evaluation" not in html:
         for _ in range(5):
             page.keyboard.press("Backspace")
         return None
-
+    
+    evaluations = html.split("</game-tile>")[:-1]
     hints = {i: None for i in range(5)}
-    for i, element in enumerate(evaluation):
-        if element == "correct": hints[i] = True
-        elif element == "present": hints[i] = False
-        elif element == "absent": hints[i] = None
+    for pos, _ in enumerate(guess):
+        hint = re.search(r"evaluation=\"([a-z]*)\"", evaluations[pos])[1]
+
+        if hint == "correct": hints[pos] = True
+        elif hint == "present": hints[pos] = False
+        elif hint == "absent": hints[pos] = None
 
     return hints
 
@@ -58,4 +58,4 @@ def solve_wordle(hard_mode: bool = False):
 
 
 if __name__ == "__main__":
-    solve_wordle(hard_mode=True)
+    solve_wordle(hard_mode=False)
