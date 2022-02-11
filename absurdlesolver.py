@@ -42,14 +42,13 @@ def solve_absurdle(hard_mode: bool = False):
         browser = sync.chromium.launch(headless=False)
         page = browser.new_page()
         page.goto(URL)
-        get_hints = scrape_hints
 
         if hard_mode:
             page.click("text=\ufe0f")
             page.click("#hardModeCheckbox")
             page.click("text=\u2715")
 
-        for i, guess, hints in wordguesser.guess_word(page, get_hints):
+        for i, guess, hints in wordguesser.guess_word(scrape_hints, page):
             if i == 5 and set(hints.values()) != {True}:
                 print("Ran out of attempts")
                 break

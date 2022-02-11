@@ -43,14 +43,13 @@ def solve_wordle(hard_mode: bool = False):
         page = browser.new_page()
         page.goto(URL)
         page.click(".close-icon")
-        get_hints = scrape_hints
 
         if hard_mode:
             page.click("#settings-button")
             page.click("#hard-mode")
             page.click("[icon=close]:visible")
 
-        for i, guess, hints in wordguesser.guess_word(page, get_hints):
+        for i, guess, hints in wordguesser.guess_word(scrape_hints, page):
             if i == 5 and set(hints.values()) != {True}:
                 print("Ran out of attempts")
                 break

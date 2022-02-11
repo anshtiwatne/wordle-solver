@@ -17,7 +17,7 @@ ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
 WORDLIST = set(open(ABSPATH, encoding="utf-8").read().split())
 
 
-def generate_hints(guess: str, solution: str):
+def generate_hints(guess: str, solution: str = "empty"):
     """Replicate Wordle behaviour: Check a guess against the solution and only returns hints"""
     # Extra function to generate hints locally for testing
 
@@ -143,15 +143,15 @@ def colorize(guess: str, hints: dict):
     return result
 
 
-def guess_word(page: sync_api.Page, get_hints: BuiltinFunctionType):
+def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
     guess = "crane"  # statistically the best guess to start Wordle with
+    guesses = {guess}
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
     hints = get_hints(page, i, guess)
-    guesses = {guess}
 
     yield i, guess, hints
 
