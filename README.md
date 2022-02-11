@@ -27,7 +27,7 @@ With the solution as "ulcer":
 
 🟨🟨⬛⬛🟨 First guess is always crane (statistically the best)
 
-⬛🟨🟨🟨⬛ Second guess is perch sice there's no more of a or e but there's c, r and e somewhere else
+⬛🟨🟩⬛🟩 Second guess is decor sice there's no more of a or n but there's c, r and e somewhere else
 
 🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data
 
