@@ -56,4 +56,4 @@ def solve_wordle(hard_mode: bool = False):
 
 
 if __name__ == "__main__":
-    solve_wordle(hard_mode=False)
+    solve_wordle(hard_mode=True)
