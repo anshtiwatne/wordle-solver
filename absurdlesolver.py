@@ -9,7 +9,7 @@ import wordguesser
 URL = "https://qntm.org/files/absurdle/absurdle.html"
 
 
-def scrape_hints(page: sync_api.Page, i: int, guess: str):
+def scrape_hints(guess: str, i: int, page: sync_api.Page, **kwargs):
     """Scrape only the hints given a guess from the Absurdle website"""
 
     # enter a guess and get the hint's inner html

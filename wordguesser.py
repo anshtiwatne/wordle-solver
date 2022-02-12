@@ -14,10 +14,10 @@ from colorama import Fore
 from playwright import sync_api
 
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
-WORDLIST = set(open(ABSPATH, encoding="utf-8").read().split())
+WORDLIST = set(open(ABSPATH).read().split())
 
 
-def generate_hints(guess: str, solution: str = "empty"):
+def generate_hints(guess: str, *args, solution: str = "empty"):
     """Replicate Wordle behaviour: Check a guess against the solution and only returns hints"""
     # Extra function to generate hints locally for testing
 
@@ -143,7 +143,7 @@ def colorize(guess: str, hints: dict):
     return result
 
 
-def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None):
+def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None, solution: str = "empty"):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
@@ -151,7 +151,7 @@ def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None):
     guesses = {guess}
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORDLIST)
-    hints = get_hints(page, i, guess)
+    hints = get_hints(guess, i, page, solution=solution)
 
     yield i, guess, hints
 
@@ -165,12 +165,19 @@ def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None):
         if not possible_words:
             raise IndexError("No possible words left")
         guess = choose_word(guesses, possible_words, randomize=False)
-        hints = get_hints(page, i, guess)
+        hints = get_hints(guess, i, page, solution=solution)
 
         while hints is None:
             possible_words.remove(guess)
             guess = choose_word(guesses, possible_words)
-            hints = get_hints(page, i, guess)
+            hints = get_hints(guess, i, page, solution=solution)
         guesses.add(guess)
 
         yield i, guess, hints
+
+# demo for how the word guesser works
+# give the guesser a word to guess and it'll print out the attempts
+if __name__ == "__main__":
+    SOLUTION = input("Enter a word to guess: ")
+    for i, guess, hints in guess_word(generate_hints, solution=SOLUTION):
+        print(f"{i+1}. {colorize(guess, hints)}")
