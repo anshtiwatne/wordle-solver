@@ -11,7 +11,6 @@ import string
 from types import BuiltinFunctionType
 import colorama
 from colorama import Fore
-from playwright import sync_api
 
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
 WORDLIST = set(open(ABSPATH).read().split())
@@ -143,7 +142,7 @@ def colorize(guess: str, hints: dict):
     return result
 
 
-def guess_word(get_hints: BuiltinFunctionType, page: sync_api.Page = None, solution: str = "empty"):
+def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "empty"):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
