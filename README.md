@@ -33,6 +33,8 @@ With the solution as "ulcer":
 
 For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
 
+[Detailed blog here](https://ansht.stck.me/post/16674/Solving-Wordle-with-Python)
+
 ## Choosing words
 
 Given a list of possible words, if you rank every word by what ratio match it is to every guess made till now and choose the one with the lowest rank, you'll get a word that adds the maximum amount of new letters and positions to the existing pool of letters.
