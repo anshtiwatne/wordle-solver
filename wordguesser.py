@@ -2,6 +2,7 @@
 Module to guess Wordle words
 """
 
+from __future__ import annotations
 import copy
 import dataclasses
 import os
@@ -71,7 +72,7 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
             letters[letter].known_positions) + yellows.get(letter, 0)
 
 
-def eliminate(possible_words: set, guess: str, letters: dict):
+def eliminate(possible_words: set, guess: str, letters: dict[str, LetterData]):
     """Check every word in wordslist and remove it if it doesn't meet the requirements"""
 
     retained_words = copy.copy(possible_words)
