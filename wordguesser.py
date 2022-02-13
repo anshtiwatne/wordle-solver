@@ -174,13 +174,3 @@ def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "emp
         guesses.add(guess)
 
         yield i, guess, hints
-
-# demo for how the word guesser works
-# give the guesser a word to guess and it'll print out the attempts
-if __name__ == "__main__":
-    SOLUTION = input("Enter a word to guess: ")
-    while SOLUTION not in WORDLIST:
-        SOLUTION = input("Word not in list try again: ")
-        
-    for i, guess, hints in guess_word(generate_hints, solution=SOLUTION):
-        print(f"{i+1}. {colorize(guess, hints)}")
