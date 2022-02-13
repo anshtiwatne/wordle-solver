@@ -60,6 +60,7 @@ class Wordle:
                     print("Ran out of attempts")
                     break
                 print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
+            page.wait_for_timeout(5000)
 
 
 class Absurdle:
