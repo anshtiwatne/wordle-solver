@@ -33,6 +33,8 @@ With the solution as "ulcer":
 
 For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
 
+![Algorithm Working on Wordle](https://drive.google.com/file/d/11KM7a0QSBZGvSWU1atqdprnLJVMdbjdb/preview)
+
 [Detailed blog here](https://ansht.stck.me/post/16674/Hello-Wordle)
 
 ## Choosing words
