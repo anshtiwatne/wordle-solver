@@ -14,7 +14,15 @@ import colorama
 from colorama import Fore
 
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
-WORDLIST = set(open(ABSPATH).read().split())
+WORDLENGTH = 5
+WORDLIST = set()
+
+# adding words of WORDLENGTH to WORDLIST from words.txt
+with open(ABSPATH) as file:
+    for line in file:
+        word = line.strip().lower()
+        if len(word) != WORDLENGTH: continue
+        if word.isalpha(): WORDLIST.add(word)
 
 
 def generate_hints(guess: str, *args, solution: str = "empty"):

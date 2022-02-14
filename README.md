@@ -25,7 +25,7 @@ After the list of possible words is shortend a word is chosen through the choose
 
 With the solution as "ulcer":
 
-🟨🟨⬛⬛🟨 First guess is always crane (statistically the best)
+🟨🟨⬛⬛🟨 First guess is always salet [(statistically the best)](https://www.youtube.com/watch?v=fRed0Xmc2Wg)
 
 ⬛🟨🟩⬛🟩 Second guess is decor sice there's no more of a or n but there's c, r and e somewhere else
 
