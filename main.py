@@ -137,6 +137,7 @@ if __name__ == "__main__":
         "\nEnter 'w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
         "Enter 'a' to run the guessing algorithm on Absurdle\n"
         "Enter 'm' to give the guessing algorithm a word of your own to guess\n"
+        "(every word is allowed for manual therefore the average attempts required increases)\n"
     )
 
     choice = input("Choose a mode: ").strip().lower()
