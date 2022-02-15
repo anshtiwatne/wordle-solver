@@ -52,7 +52,9 @@ class Wordle:
             if hard_mode:
                 page.click("#settings-button")
                 page.click("#hard-mode")
+                page.click("#dark-theme")
                 page.click("[icon=close]:visible")
+                page.wait_for_timeout(5000)
 
             # printing the colorized guesses to the terminal
             for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints, page):
@@ -118,7 +120,7 @@ class Manual:
     def get_solution():
         SOLUTION = input("Enter a solution to guess: ")
 
-        while SOLUTION not in wordguesser.WORDLIST:
+        while SOLUTION not in wordguesser.WORD_LIST:
             if len(SOLUTION) > 5: SOLUTION = input("Solution must be 6 letters long: ")
             else: SOLUTION = input("Solution must be in the wordlist: ")
 
@@ -144,6 +146,6 @@ if __name__ == "__main__":
     while choice not in  ["w", "a", "m"]:
         choice = input("Not a valid choice try again: ")
 
-    if choice == "w": Wordle.solve()
+    if choice == "w": Wordle.solve(hard_mode=True)
     elif choice == "a": Absurdle.solve()
     elif choice == "m": Manual.solve()

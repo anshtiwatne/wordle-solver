@@ -8,11 +8,15 @@ Clone the repository and run either solver scripts
 
 ```bash
 python3 wordlesolver.py
-# or python3 absurdlesolver.py
+Enter 'a' to run the guessing algorithm on Absurdle
+Enter 'm' to give the guessing algorithm a word of your own to guess
+(every word is allowed for manual therefore the average attempts required increases)
 
-crane
-perch
-ulcer
+Choose a mode: w
+1. salet
+2. jirga
+3. krona
+4. aroma
 ```
 
 ## How it works
@@ -23,13 +27,15 @@ Then based on each letter's match data words that won't be possible are removed.
 
 After the list of possible words is shortend a word is chosen through the choose_word function to be the new guess to then get hints for and shorten the possiblities further.
 
-With the solution as "ulcer":
+With the solution as "aroma":
 
-🟨🟨⬛⬛🟨 First guess is always salet [(statistically the best)](https://www.youtube.com/watch?v=fRed0Xmc2Wg)
+⬛🟨⬛⬛⬛ First guess is always salet [(statistically the best)](https://www.youtube.com/watch?v=fRed0Xmc2Wg)
 
-⬛🟨🟩⬛🟩 Second guess is decor sice there's no more of a or n but there's c, r and e somewhere else
+⬛⬛🟨⬛🟩 Second guess is decor sice there's no more of a or n but there's c, r and e somewhere else
 
-🟩🟩🟩🟩🟩 By the third guess the algorithm arrives at the solution using the same procedure as the second but with more data
+⬛🟩🟩⬛🟩 The guesses repeat the same process as the second until it reaches the solution
+
+🟩🟩🟩🟩🟩 The solution is found by the fourth guess
 
 For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
 

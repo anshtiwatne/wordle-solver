@@ -14,15 +14,16 @@ import colorama
 from colorama import Fore
 
 ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
-WORDLENGTH = 5
-WORDLIST = set()
+WORD_LENGTH = 5
+WORD_LIST = set()
+FIRST_GUESS = "salet" # statistically the best guess to start Wordle with
 
 # adding words of WORDLENGTH to WORDLIST from words.txt
 with open(ABSPATH) as file:
     for line in file:
         word = line.strip().lower()
-        if len(word) != WORDLENGTH: continue
-        if word.isalpha(): WORDLIST.add(word)
+        if len(word) != WORD_LENGTH: continue
+        if word.isalpha(): WORD_LIST.add(word)
 
 
 def generate_hints(guess: str, *args, solution: str = "empty"):
@@ -155,10 +156,10 @@ def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "emp
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
-    guess = "crane"  # statistically the best guess to start Wordle with
+    guess = FIRST_GUESS
     guesses = {guess}
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
-    possible_words = copy.copy(WORDLIST)
+    possible_words = copy.copy(WORD_LIST)
     hints = get_hints(guess, i, page, solution=solution)
 
     yield i, guess, hints
