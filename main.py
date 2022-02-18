@@ -6,6 +6,21 @@ import re
 from playwright import sync_api
 import wordguesser
 
+playwright = None
+browser = None
+page = None
+
+def init_browser():
+    """"initialize the browser"""
+
+    global playwright
+    global browser
+    global page
+
+    playwright = sync_api.sync_playwright().start()
+    browser = playwright.chromium.launch(channel="chrome", headless=False)
+    page = browser.new_page()
+
 
 class Wordle:
     """Class for Wordle solver"""
@@ -37,30 +52,26 @@ class Wordle:
 
         return hints
 
-    def solve(hard_mode: bool = False):
+    def solve(page: sync_api.Page, hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
-        with sync_api.sync_playwright() as sync:
-            browser = sync.chromium.launch(headless=False)
-            page = browser.new_page()
-            page.goto(Wordle.URL)
+        page.goto(Wordle.URL)
+        # close the tutorial pop-up that appears on first load
+        if page.is_visible(".close-icon"): page.click(".close-icon")
 
-            # close the tutorial pop-up that appears on first load
-            if page.is_visible(".close-icon"): page.click(".close-icon")
+        if hard_mode: # enable hard mode from settings if requested
+            page.click("#settings-button")
+            page.click("#hard-mode")
+            page.click("[icon=close]:visible")
 
-            # enable hard mode from settings if requested
-            if hard_mode:
-                page.click("#settings-button")
-                page.click("#hard-mode")
-                page.click("[icon=close]:visible")
-
-            # printing the colorized guesses to the terminal
-            for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints, page):
-                if i == 5 and set(hints.values()) != {True}:
-                    print("Ran out of attempts")
-                    break
-                print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-            page.wait_for_timeout(5000)
+        # printing the colorized guesses to the terminal
+        for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints, page):
+            if i == 5 and set(hints.values()) != {True}:
+                print("Ran out of attempts")
+                break
+            print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
+        print()
+        page.wait_for_timeout(5000)
 
 
 class Absurdle:
@@ -92,24 +103,21 @@ class Absurdle:
 
         return hints
 
-    def solve(hard_mode: bool = False):
+    def solve(page: sync_api.Page, hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
-        with sync_api.sync_playwright() as sync:
-            browser = sync.chromium.launch(headless=False)
-            page = browser.new_page()
-            page.goto(Absurdle.URL)
+        page.goto(Absurdle.URL)
 
-            # enable hard mode from settings if requested
-            if hard_mode:
-                page.click("text=\ufe0f")
-                page.click("#hardModeCheckbox")
-                page.click("text=\u2715")
+        if hard_mode: # enable hard mode from settings if requested
+            page.click("text=\ufe0f")
+            page.click("#hardModeCheckbox")
+            page.click("text=\u2715")
 
-            # printing the colorized guesses to the terminal
-            for i, guess, hints in wordguesser.guess_word(Absurdle.scrape_hints, page):
-                print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-                if set(hints.values()) == {True}: page.wait_for_timeout(2000)
+        # printing the colorized guesses to the terminal
+        for i, guess, hints in wordguesser.guess_word(Absurdle.scrape_hints, page):
+            print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
+            print()
+            if set(hints.values()) == {True}: page.wait_for_timeout(2000)
 
 
 class Manual:
@@ -130,9 +138,11 @@ class Manual:
         SOLUTION = Manual.get_solution()
         for i, guess, hints in wordguesser.guess_word(wordguesser.generate_hints, solution=SOLUTION):
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
+        print()
 
 
 if __name__ == "__main__":
+
     print(
         "\nEnter 'w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
         "Enter 'a' to run the guessing algorithm on Absurdle\n"
@@ -140,10 +150,19 @@ if __name__ == "__main__":
         "(every word is allowed for manual therefore the average attempts required increases)\n"
     )
 
-    choice = input("Choose a mode: ").strip().lower()
-    while choice not in  ["w", "a", "m"]:
-        choice = input("Not a valid choice try again: ")
+    try:
+        choice = input("Choose a mode: ").strip().lower()
+        while choice not in  ["w", "a", "m"]:
+            choice = input("Not a valid choice try again: ")
 
-    if choice == "w": Wordle.solve()
-    elif choice == "a": Absurdle.solve()
-    elif choice == "m": Manual.solve()
+        init_browser()
+        if choice == "w": Wordle.solve(page)
+        elif choice == "a": Absurdle.solve(page)
+        elif choice == "m": Manual.solve()
+
+    except KeyboardInterrupt:
+        print("Exiting...\n")
+        page.close()
+        browser.close()
+        playwright.stop()
+        exit()
