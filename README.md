@@ -39,7 +39,7 @@ With the solution as "aroma":
 
 For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
 
-https://user-images.githubusercontent.com/83647366/153885024-8600fb52-7c62-465f-a47b-e0c2f406dafe.mp4
+https://user-images.githubusercontent.com/83647366/154109420-6425146f-ceaf-4ea7-bd9e-01b4e0045f1f.mp4
 
 [Detailed blog here](https://ansht.stck.me/post/16674/Hello-Wordle)
 
