@@ -169,5 +169,5 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Exiting...\n")
-        playwright.stop() # no idea why this isn't working
-        exit()
+        # close the browser if it's open
+        raise SystemExit
