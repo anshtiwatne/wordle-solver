@@ -152,7 +152,7 @@ def colorize(guess: str, hints: dict):
     return result
 
 
-def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "empty"):
+def guess_word(get_hints: BuiltinFunctionType, solution: str = "empty"):
     """Yeilds a guess until the guess matches the solution"""
 
     i = int()
@@ -160,7 +160,7 @@ def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "emp
     guesses = {guess}
     letters = {letter: LetterData() for letter in string.ascii_lowercase}
     possible_words = copy.copy(WORD_LIST)
-    hints = get_hints(guess, i, page, solution=solution)
+    hints = get_hints(guess, i, solution=solution)
 
     yield i, guess, hints
 
@@ -174,12 +174,12 @@ def guess_word(get_hints: BuiltinFunctionType, page = None, solution: str = "emp
         if not possible_words:
             raise IndexError("No possible words left")
         guess = choose_word(guesses, possible_words, randomize=False)
-        hints = get_hints(guess, i, page, solution=solution)
+        hints = get_hints(guess, i, solution=solution)
 
         while hints is None:
             possible_words.remove(guess)
             guess = choose_word(guesses, possible_words)
-            hints = get_hints(guess, i, page, solution=solution)
+            hints = get_hints(guess, i, solution=solution)
         guesses.add(guess)
 
         yield i, guess, hints

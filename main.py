@@ -27,9 +27,10 @@ class Wordle:
 
     URL = "https://www.nytimes.com/games/wordle/index.html"
 
-    def scrape_hints(guess: str, i: int, page: sync_api.Page, **kwargs):
+    def scrape_hints(guess: str, i: int, **kwargs):
         """Scrape only the hints given a guess from the Wordle website"""
 
+        global page
         # enter the guess and get the hint's inner html
         page.type("#board", f"{guess}\n")
         page.wait_for_timeout(2000)
@@ -52,9 +53,10 @@ class Wordle:
 
         return hints
 
-    def solve(page: sync_api.Page, hard_mode: bool = False):
+    def solve(hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
+        global page
         page.goto(Wordle.URL)
         # close the tutorial pop-up that appears on first load
         if page.is_visible(".close-icon"): page.click(".close-icon")
@@ -65,12 +67,11 @@ class Wordle:
             page.click("[icon=close]:visible")
 
         # printing the colorized guesses to the terminal
-        for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints, page):
+        for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints):
             if i == 5 and set(hints.values()) != {True}:
                 print("Ran out of attempts")
                 break
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-        print()
         page.wait_for_timeout(5000)
 
 
@@ -79,9 +80,10 @@ class Absurdle:
 
     URL = "https://qntm.org/files/absurdle/absurdle.html"
 
-    def scrape_hints(guess: str, i: int, page: sync_api.Page, **kwargs):
+    def scrape_hints(guess: str, i: int, **kwargs):
         """Scrape only the hints given a guess from the Absurdle website"""
 
+        global page
         # enter a guess and get the hint's inner html
         page.type(".absurdle__box1", f"{guess}\n")
         html = page.inner_html(f"tr >> nth={i}")
@@ -103,9 +105,10 @@ class Absurdle:
 
         return hints
 
-    def solve(page: sync_api.Page, hard_mode: bool = False):
+    def solve(hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
+        global page
         page.goto(Absurdle.URL)
 
         if hard_mode: # enable hard mode from settings if requested
@@ -114,9 +117,8 @@ class Absurdle:
             page.click("text=\u2715")
 
         # printing the colorized guesses to the terminal
-        for i, guess, hints in wordguesser.guess_word(Absurdle.scrape_hints, page):
+        for i, guess, hints in wordguesser.guess_word(Absurdle.scrape_hints):
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-            print()
             if set(hints.values()) == {True}: page.wait_for_timeout(2000)
 
 
@@ -138,7 +140,6 @@ class Manual:
         SOLUTION = Manual.get_solution()
         for i, guess, hints in wordguesser.guess_word(wordguesser.generate_hints, solution=SOLUTION):
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-        print()
 
 
 if __name__ == "__main__":
@@ -155,9 +156,8 @@ if __name__ == "__main__":
         while choice not in  ["w", "a", "m"]:
             choice = input("Not a valid choice try again: ")
 
-        init_browser()
-        if choice == "w": Wordle.solve(page)
-        elif choice == "a": Absurdle.solve(page)
+        if choice == "w": init_browser(); Wordle.solve(page)
+        elif choice == "a": init_browser(); Absurdle.solve(page)
         elif choice == "m": Manual.solve()
 
     except KeyboardInterrupt:
