@@ -10,6 +10,7 @@ playwright: sync_api.Playwright
 browser: sync_api.Browser
 page: sync_api.Page
 
+
 def init_browser():
     """"initialize the browser"""
 
@@ -38,7 +39,8 @@ class Wordle:
 
         # if the guess is not in the list, delete it and return None as hints
         if "evaluation" not in html:
-            for _ in range(5): page.keyboard.press("Backspace")
+            for _ in range(5):
+                page.keyboard.press("Backspace")
             return None
 
         # convert the inner html to hints in a dictionary
@@ -61,7 +63,7 @@ class Wordle:
         # close the tutorial pop-up that appears on first load
         if page.is_visible(".close-icon"): page.click(".close-icon")
 
-        if hard_mode: # enable hard mode from settings if requested
+        if hard_mode:  # enable hard mode from settings if requested
             page.click("#settings-button")
             page.click("#hard-mode")
             page.click("[icon=close]:visible")
@@ -90,7 +92,8 @@ class Absurdle:
 
         # if the guess is not in the list, delete it and return None as hints
         if "--input" in html:
-            for _ in range(5): page.keyboard.press("Backspace")
+            for _ in range(5):
+                page.keyboard.press("Backspace")
             return None
 
         # convert the inner html to hints in a dictionary
@@ -111,7 +114,7 @@ class Absurdle:
         global page
         page.goto(Absurdle.URL)
 
-        if hard_mode: # enable hard mode from settings if requested
+        if hard_mode:  # enable hard mode from settings if requested
             page.click("text=\ufe0f")
             page.click("#hardModeCheckbox")
             page.click("text=\u2715")
@@ -129,8 +132,10 @@ class Manual:
         SOLUTION = input("Enter a solution to guess: ")
 
         while SOLUTION not in wordguesser.WORD_LIST:
-            if len(SOLUTION) > 5: SOLUTION = input("Solution must be 6 letters long: ")
-            else: SOLUTION = input("Solution must be in the wordlist: ")
+            if len(SOLUTION) > 5:
+                SOLUTION = input("Solution must be 6 letters long: ")
+            else:
+                SOLUTION = input("Solution must be in the wordlist: ")
 
         return SOLUTION
 
@@ -138,7 +143,8 @@ class Manual:
         """Let the wordguesser guess a manually provided solution"""
 
         SOLUTION = Manual.get_solution()
-        for i, guess, hints in wordguesser.guess_word(wordguesser.generate_hints, solution=SOLUTION):
+        for i, guess, hints in wordguesser.guess_word(
+                wordguesser.generate_hints, solution=SOLUTION):
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
 
 
@@ -153,12 +159,17 @@ if __name__ == "__main__":
 
     try:
         choice = input("Choose a mode: ").strip().lower()
-        while choice not in  ["w", "a", "m"]:
+        while choice not in ["w", "a", "m"]:
             choice = input("Not a valid choice try again: ")
 
-        if choice == "w": init_browser(); Wordle.solve()
-        elif choice == "a": init_browser(); Absurdle.solve()
-        elif choice == "m": Manual.solve()
+        if choice == "w":
+            init_browser()
+            Wordle.solve()
+        elif choice == "a":
+            init_browser()
+            Absurdle.solve()
+        elif choice == "m":
+            Manual.solve()
 
     except KeyboardInterrupt:
         print("Exiting...\n")
