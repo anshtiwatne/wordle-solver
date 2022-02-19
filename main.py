@@ -6,9 +6,9 @@ import re
 from playwright import sync_api
 import wordguesser
 
-playwright = None
-browser = None
-page = None
+playwright: sync_api.Playwright
+browser: sync_api.Browser
+page: sync_api.Page
 
 def init_browser():
     """"initialize the browser"""
@@ -72,7 +72,7 @@ class Wordle:
                 print("Ran out of attempts")
                 break
             print(f"{i+1}. {wordguesser.colorize(guess, hints)}")
-        page.wait_for_timeout(5000)
+        page.wait_for_timeout(2000)
 
 
 class Absurdle:
@@ -156,13 +156,11 @@ if __name__ == "__main__":
         while choice not in  ["w", "a", "m"]:
             choice = input("Not a valid choice try again: ")
 
-        if choice == "w": init_browser(); Wordle.solve(page)
-        elif choice == "a": init_browser(); Absurdle.solve(page)
+        if choice == "w": init_browser(); Wordle.solve()
+        elif choice == "a": init_browser(); Absurdle.solve()
         elif choice == "m": Manual.solve()
 
     except KeyboardInterrupt:
         print("Exiting...\n")
-        page.close()
-        browser.close()
         playwright.stop()
         exit()
