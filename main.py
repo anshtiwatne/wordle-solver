@@ -162,16 +162,12 @@ if __name__ == "__main__":
         while choice not in ["w", "a", "m"]:
             choice = input("Not a valid choice try again: ")
 
-        if choice == "w":
-            init_browser()
-            Wordle.solve()
-        elif choice == "a":
-            init_browser()
-            Absurdle.solve()
-        elif choice == "m":
-            Manual.solve()
+        if choice == "w" or choice == "a": init_browser()
+        if choice == "w": Wordle.solve()
+        elif choice == "a": Absurdle.solve()
+        elif choice == "m": Manual.solve()
 
     except KeyboardInterrupt:
         print("Exiting...\n")
-        playwright.stop()
+        playwright.stop() # no idea why this isn't working
         exit()
