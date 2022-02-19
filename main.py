@@ -168,6 +168,7 @@ if __name__ == "__main__":
         elif choice == "m": Manual.solve()
 
     except KeyboardInterrupt:
-        print("Exiting...\n")
-        # close the browser if it's open
-        raise SystemExit
+        print("\nExiting...\n")
+        browser.close()
+        playwright.stop()
+        raise SystemExit from None
