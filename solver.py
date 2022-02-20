@@ -31,7 +31,6 @@ class Wordle:
     def scrape_hints(guess: str, i: int, **kwargs):
         """Scrape only the hints given a guess from the Wordle website"""
 
-        global page
         # enter the guess and get the hint's inner html
         page.type("#board", f"{guess}\n")
         page.wait_for_timeout(2000)
@@ -58,7 +57,6 @@ class Wordle:
     def solve(hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
-        global page
         page.goto(Wordle.URL)
         # close the tutorial pop-up that appears on first load
         if page.is_visible(".close-icon"): page.click(".close-icon")
@@ -85,7 +83,6 @@ class Absurdle:
     def scrape_hints(guess: str, i: int, **kwargs):
         """Scrape only the hints given a guess from the Absurdle website"""
 
-        global page
         # enter a guess and get the hint's inner html
         page.type(".absurdle__box1", f"{guess}\n")
         html = page.inner_html(f"tr >> nth={i}")
@@ -111,7 +108,6 @@ class Absurdle:
     def solve(hard_mode: bool = False):
         """Pass guess from guess_word to the Wordle website"""
 
-        global page
         page.goto(Absurdle.URL)
 
         if hard_mode:  # enable hard mode from settings if requested
@@ -169,6 +165,5 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
-        browser.close()
-        playwright.stop()
+        playwright.stop() # not sure why this doesn't work
         raise SystemExit from None
