@@ -1,5 +1,5 @@
 """
-Work in Progress
+Tests for the wordguesser module
 """
 
 import random
