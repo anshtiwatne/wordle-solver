@@ -54,12 +54,13 @@ class TestGuesser(unittest.TestCase):
         """Get the average guesses it takes to get to the solution"""
 
         attempts = []
-        for _ in range(5):
+        for _ in range(100):
             solution = random.choice(list(wordguesser.WORD_LIST))
             guesses = len(list(wordguesser.guess_word(wordguesser.generate_hints, solution=solution)))
             attempts.append(guesses)
 
         tries = statistics.mean(attempts)
+        print(tries)
         self.assertLessEqual(tries, 6)
 
 

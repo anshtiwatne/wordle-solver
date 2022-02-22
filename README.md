@@ -37,7 +37,7 @@ With the solution as "aroma":
 
 🟩🟩🟩🟩🟩 The solution is found by the fourth guess
 
-For 100 random solutions the algorithm averaged (yet to calculate) tries to get to the solution.
+For 1000 random solutions the algorithm averaged 4.708 tries to get to the solution.
 
 https://user-images.githubusercontent.com/83647366/154109420-6425146f-ceaf-4ea7-bd9e-01b4e0045f1f.mp4
 
