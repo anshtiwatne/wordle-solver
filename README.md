@@ -6,8 +6,10 @@ Guessing algrorithm for Wordle written in Python
 
 Clone the repository and run either solver scripts
 
-```bash
-python3 wordlesolver.py
+```powershell
+python wordlesolver.py
+
+Enter 'w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)
 Enter 'a' to run the guessing algorithm on Absurdle
 Enter 'm' to give the guessing algorithm a word of your own to guess
 (every word is allowed for manual therefore the average attempts required increases)

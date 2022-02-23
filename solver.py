@@ -3,6 +3,7 @@ Using wordguesser module to solve Wordle and Absurdle
 """
 
 import re
+import sys
 from playwright import sync_api
 import wordguesser
 
@@ -58,8 +59,8 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
-        # close the tutorial pop-up that appears on first load
-        if page.is_visible(".close-icon"): page.click(".close-icon")
+        if page.is_visible("#pz-gdpr-btn-closex"): page.click("#pz-gdpr-btn-closex") # close tracker pop up
+        if page.is_visible(".close-icon"): page.click(".close-icon") # close tutorial pop up
 
         if hard_mode:  # enable hard mode from settings if requested
             page.click("#settings-button")
@@ -147,21 +148,32 @@ class Manual:
 if __name__ == "__main__":
 
     print(
-        "\nEnter 'w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
-        "Enter 'a' to run the guessing algorithm on Absurdle\n"
-        "Enter 'm' to give the guessing algorithm a word of your own to guess\n"
+        "\nEnter '-w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
+        "Enter '-a' to run the guessing algorithm on Absurdle\n"
+        "Enter '-m' to give the guessing algorithm a word of your own to guess\n"
         "(every word is allowed for manual therefore the average attempts required increases)\n"
     )
 
     try:
-        choice = input("Choose a mode: ").strip().lower()
-        while choice not in ["w", "a", "m"]:
-            choice = input("Not a valid choice try again: ")
+        hard_mode_choice = False
 
-        if choice == "w" or choice == "a": init_browser()
-        if choice == "w": Wordle.solve()
-        elif choice == "a": Absurdle.solve()
-        elif choice == "m": Manual.solve()
+        # get the choice of the mode though input if not through an argument
+        if len(sys.argv) > 1: choices = sys.argv[1:]
+        else: choices = input("Choose a mode: ").strip().lower().split()
+
+        if len(choices) > 0: mode_choice = choices[0]
+        if len(choices) > 1: hard_mode_choice = choices[1]
+
+        # check if the mode choice is valid
+        while mode_choice not in ["-w", "-a", "-m"]:
+            mode_choice = input("Not a valid choice try again: ")
+
+        if mode_choice == "-w" or mode_choice == "-a": init_browser()
+        if hard_mode_choice == "-h": hard_mode_choice = True
+
+        if mode_choice == "-w": Wordle.solve(hard_mode=hard_mode_choice)
+        elif mode_choice == "-a": Absurdle.solve(hard_mode=hard_mode_choice)
+        elif mode_choice == "-m": Manual.solve()
 
     except KeyboardInterrupt:
         print("\nExiting...\n")
