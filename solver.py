@@ -4,12 +4,12 @@ Using wordguesser module to solve Wordle and Absurdle
 
 import re
 import sys
-from playwright import sync_api
 import wordguesser
+if __name__ != "__main__": from playwright import sync_api
 
-playwright: sync_api.Playwright
-browser: sync_api.Browser
-page: sync_api.Page
+playwright: object
+browser: object
+page: object
 
 
 def init_browser():
@@ -146,6 +146,14 @@ class Manual:
 
 
 if __name__ == "__main__":
+    
+    try: # check if playwright is installed else use manual mode
+        from playwright import sync_api
+    except ModuleNotFoundError:
+        print("Install Playwright to use on a browser: pip install playwright")
+        print("Defaulting to manual mode\n")
+        Manual.solve()
+        sys.exit()
 
     print(
         "\nEnter '-w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
