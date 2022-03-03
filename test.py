@@ -59,9 +59,9 @@ class TestGuesser(unittest.TestCase):
             guesses = len(list(wordguesser.guess_word(wordguesser.generate_hints, solution=solution)))
             attempts.append(guesses)
 
-        tries = statistics.mean(attempts)
-        print(tries)
-        self.assertLessEqual(tries, 6)
+        average = statistics.mean(attempts)
+        print(average)
+        self.assertLessEqual(average, 6)
 
 
 if __name__ == "__main__":

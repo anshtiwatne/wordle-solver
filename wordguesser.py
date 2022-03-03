@@ -118,7 +118,8 @@ def eliminate(possible_words: set, guess: str, letters: dict[str, LetterData]):
 def choose_word(guesses: set, possible_words: set, randomize: bool = False):
     """Get an optimized choice of a word to be the next guess from the possible words"""
 
-    if randomize: return random.choice(list(possible_words))
+    if randomize:
+        return random.choice(list(possible_words))
     comparison = {}
     # The best next guess seems to be the one that differs most from the previous guesses
     # since this diversifys the letters used therefore maximizing the hints received
