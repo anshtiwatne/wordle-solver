@@ -2,7 +2,7 @@
 Module to guess Wordle words
 """
 
-from __future__ import annotations
+from __future__ import annotations # for Python versions below 3.8
 import copy
 import dataclasses
 import os
