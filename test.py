@@ -60,7 +60,7 @@ class TestGuesser(unittest.TestCase):
             attempts.append(guesses)
 
         average = statistics.mean(attempts)
-        print(average)
+        print(f"Average attempts: {average}")
         self.assertLessEqual(average, 6)
 
 
