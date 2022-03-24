@@ -5,7 +5,9 @@ Using wordguesser module to solve Wordle and Absurdle
 import re
 import sys
 import wordguesser
-if __name__ != "__main__": from playwright import sync_api
+
+if __name__ != "__main__":
+    from playwright import sync_api
 
 playwright: object
 browser: object
