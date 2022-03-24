@@ -150,7 +150,7 @@ if __name__ == "__main__":
     try: # check if playwright is installed else use manual mode
         from playwright import sync_api
     except ModuleNotFoundError:
-        print("Install Playwright to use on a browser: pip install playwright")
+        print("\nInstall Playwright to use on a browser: pip install playwright")
         print("Defaulting to manual mode\n")
         Manual.solve()
         sys.exit()
