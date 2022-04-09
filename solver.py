@@ -17,9 +17,7 @@ page: object
 def init_browser():
     """"initialize the browser"""
 
-    global playwright
-    global browser
-    global page
+    global playwright, browser, page
 
     playwright = sync_api.sync_playwright().start()
     browser = playwright.chromium.launch(channel="chrome", headless=False)
