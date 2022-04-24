@@ -6,12 +6,16 @@ import re
 import sys
 import wordguesser
 
-if __name__ != "__main__":
-    from playwright import sync_api
-
 playwright: object
 browser: object
 page: object
+
+if __name__ != "__main__":
+    from playwright import sync_api
+
+    playwright: sync_api.Playwright
+    browser: sync_api.Browser
+    page: sync_api.Page
 
 
 def init_browser():
@@ -153,7 +157,7 @@ if __name__ == "__main__":
         print("\nInstall Playwright to use on a browser: pip install playwright")
         print("Defaulting to manual mode\n")
         Manual.solve()
-        sys.exit()
+        raise SystemExit from None
 
     print(
         "\nEnter '-w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
