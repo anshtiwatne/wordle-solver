@@ -37,21 +37,21 @@ class Wordle:
         """Scrape only the hints given a guess from the Wordle website"""
 
         # enter the guess and get the hint's inner html
-        page.type("#board", f"{guess}\n")
+        page.type("#wordle-app-game", f"{guess}\n")
         page.wait_for_timeout(2000)
-        html = page.inner_html(f".row >> nth={i}")
+        html = page.inner_html(f".Row-module_row__dEHfN >> nth={i}")
 
         # if the guess is not in the list, delete it and return None as hints
-        if "evaluation" not in html:
+        if "tbd" in html:
             for _ in range(5):
                 page.keyboard.press("Backspace")
             return None
 
         # convert the inner html to hints in a dictionary
-        evaluations = html.split("</game-tile>")[:-1]
+        evaluations = re.findall(r"data-state=\"(.*?)\"", html)
         hints = {i: None for i in range(5)}
         for pos, _ in enumerate(guess):
-            hint = re.search(r"evaluation=\"([a-z]*)\"", evaluations[pos])[1]
+            hint = evaluations[pos]
 
             if hint == "correct": hints[pos] = True
             elif hint == "present": hints[pos] = False
@@ -63,13 +63,12 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
-        if page.is_visible("#pz-gdpr-btn-closex"): page.click("#pz-gdpr-btn-closex") # close tracker pop up
-        if page.is_visible(".close-icon"): page.click(".close-icon") # close tutorial pop up
+        if page.is_visible(".game-icon"): page.click("data-testid=icon-close") # close tutorial pop up
 
         if hard_mode:  # enable hard mode from settings if requested
-            page.click("#settings-button")
-            page.click("#hard-mode")
-            page.click("[icon=close]:visible")
+            page.click("data-testid=icon-settings")
+            page.click(".Switch-module_knob__oRTpP")
+            page.click("data-testid=icon-close >> visible=true")
 
         # printing the colorized guesses to the terminal
         for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints):
