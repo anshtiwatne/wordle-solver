@@ -37,9 +37,11 @@ class Wordle:
         """Scrape only the hints given a guess from the Wordle website"""
 
         # enter the guess and get the hint's inner html
-        page.type("#wordle-app-game", f"{guess}\n")
+        page.focus("#wordle-app-game")
+        page.type("#wordle-app-game", f"{guess}")
+        page.click(".Key-module_oneAndAHalf__bq8Tw")
         page.wait_for_timeout(2000)
-        html = page.inner_html(f".Row-module_row__dEHfN >> nth={i}")
+        html = page.inner_html(f".Row-module_row__pwpBq >> nth={i}")
 
         # if the guess is not in the list, delete it and return None as hints
         if "tbd" in html:
@@ -63,12 +65,19 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
-        if page.is_visible(".game-icon"): page.click("data-testid=icon-close") # close tutorial pop up
+        page.click(".Modal-module_closeIcon__TcEKb") # close tutorial pop up
+        ad = page.query_selector("#top") # remove ad to improve loading
+        ad.evaluate("ad => ad.remove()")
+        page.wait_for_timeout(2000)
+        page.click(".Board-module_board__jeoPS")
 
         if hard_mode:  # enable hard mode from settings if requested
-            page.click("data-testid=icon-settings")
-            page.click(".Switch-module_knob__oRTpP")
-            page.click("data-testid=icon-close >> visible=true")
+            page.click("#settings-button")
+            page.click(".Switch-module_switch__isHE_")
+            page.click(".game-icon >> visible=true")
+
+        # page.wait_for_load_state()
+        page.wait_for_timeout(3000)
 
         # printing the colorized guesses to the terminal
         for i, guess, hints in wordguesser.guess_word(Wordle.scrape_hints):

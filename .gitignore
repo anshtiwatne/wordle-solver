@@ -131,3 +131,6 @@ dmypy.json
 # Pylint
 pylintrc
 .pylintrc
+
+# VSCode
+.vscode
