@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+#pylint: disable=invalid-name, no-self-argument, global-statement, unused-argument, no-method-argument, multiple-statements
+
 """
 Using wordguesser module to solve Wordle and Absurdle
 """
@@ -65,6 +68,7 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
+        page.click(".Welcome-module_button__ZG0Zh") # select play
         page.click(".Modal-module_closeIcon__TcEKb") # close tutorial pop up
         ad = page.query_selector("#top") # remove ad to improve loading
         ad.evaluate("ad => ad.remove()")
@@ -135,16 +139,18 @@ class Absurdle:
 
 
 class Manual:
-    """Class for solving Wordle with a coustom solution"""
+    """Class for solving Wordle with a custom solution"""
 
     def get_solution():
+        """Take input for a solution to be guessed and validate it"""
+
         SOLUTION = input("Enter a solution to guess: ")
 
         while SOLUTION not in wordguesser.WORD_LIST:
             if len(SOLUTION) > 5:
                 SOLUTION = input("Solution must be 6 letters long: ")
             else:
-                SOLUTION = input("Solution must be in the wordlist: ")
+                SOLUTION = input("Solution must be in the word list: ")
 
         return SOLUTION
 
@@ -168,10 +174,10 @@ if __name__ == "__main__":
         raise SystemExit from None
 
     print(
-        "\nEnter '-w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)\n"
+        "\nEnter '-w' to run the guessing algorithm on Wordle\n"
         "Enter '-a' to run the guessing algorithm on Absurdle\n"
         "Enter '-m' to give the guessing algorithm a word of your own to guess\n"
-        "(every word is allowed for manual therefore the average attempts required increases)\n"
+        "(The set of words is larger in the manual mode leading to higher average attempts)\n"
     )
 
     try:
