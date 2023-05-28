@@ -4,22 +4,9 @@ Guessing algrorithm for Wordle written in Python
 
 ## Installation & Usage
 
-Clone the repository and run either solver scripts
+Clone the repository, install the modules in requireents.txt and run solver.py
 
-```powershell
-python wordlesolver.py
-
-Enter 'w' to run the guessing algorithm on Wordle (IT MIGHT SPOIL TODAY'S WORDLE FOR YOU)
-Enter 'a' to run the guessing algorithm on Absurdle
-Enter 'm' to give the guessing algorithm a word of your own to guess
-(every word is allowed for manual therefore the average attempts required increases)
-
-Choose a mode: w
-1. salet
-2. jirga
-3. krona
-4. aroma
-```
+<img alt="demo" src="https://github.com/anshtiwatne/wordle-solver/assets/83647366/3d653e20-d67f-4107-8be4-0e0aea2fc5bc">
 
 ## How it works
 
