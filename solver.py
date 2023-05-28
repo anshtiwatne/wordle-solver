@@ -57,10 +57,11 @@ class Wordle:
         hints = {i: None for i in range(5)}
         for pos, _ in enumerate(guess):
             hint = evaluations[pos]
-
-            if hint == "correct": hints[pos] = True
-            elif hint == "present": hints[pos] = False
-            elif hint == "absent": hints[pos] = None
+            
+            match hint:
+                case "correct": hints[pos] = True
+                case "present": hints[pos] = False
+                case "absent": hints[pos] = None
 
         return hints
 
@@ -116,9 +117,10 @@ class Absurdle:
         for pos, _ in enumerate(guess):
             hint = re.search(r"--([a-z].*)\"", evaluations[pos])[1]
 
-            if hint == "exact": hints[pos] = True
-            elif hint == "inexact": hints[pos] = False
-            elif hint == "wrong": hints[pos] = None
+            match hint:
+                case "exact": hints[pos] = True
+                case "inexact": hints[pos] = False
+                case "wrong": hints[pos] = None
 
         return hints
 
@@ -177,7 +179,7 @@ if __name__ == "__main__":
         "\nEnter '-w' to run the guessing algorithm on Wordle\n"
         "Enter '-a' to run the guessing algorithm on Absurdle\n"
         "Enter '-m' to give the guessing algorithm a word of your own to guess\n"
-        "(The set of words is larger in the manual mode leading to higher average attempts)\n"
+        "(The set of words is larger in the manual mode leading to higher average guesses)\n"
     )
 
     try:
@@ -197,9 +199,10 @@ if __name__ == "__main__":
         if mode_choice == "-w" or mode_choice == "-a": init_browser()
         if hard_mode_choice == "-h": hard_mode_choice = True
 
-        if mode_choice == "-w": Wordle.solve(hard_mode=hard_mode_choice)
-        elif mode_choice == "-a": Absurdle.solve(hard_mode=hard_mode_choice)
-        elif mode_choice == "-m": Manual.solve()
+        match mode_choice:
+            case "-w": Wordle.solve(hard_mode=hard_mode_choice)
+            case "-a": Absurdle.solve(hard_mode=hard_mode_choice)
+            case "-m": Manual.solve()
 
     except KeyboardInterrupt:
         print("\nExiting...\n")

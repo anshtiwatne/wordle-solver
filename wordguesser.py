@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+#pylint: disable=multiple-statements, redefined-outer-name, unused-argument
+
 """
 Module to guess Wordle words
 """
@@ -19,7 +22,7 @@ WORD_LIST = set()
 FIRST_GUESS = "salet" # statistically the best guess to start Wordle with
 
 # adding words of WORDLENGTH to WORDLIST from words.txt
-with open(ABSPATH) as file:
+with open(ABSPATH, "r", encoding="UTF-8") as file:
     for line in file:
         word = line.strip().lower()
         if len(word) != WORD_LENGTH: continue
@@ -27,7 +30,7 @@ with open(ABSPATH) as file:
 
 
 def generate_hints(guess: str, *args, solution: str = "empty"):
-    """Replicate Wordle behaviour: Check a guess against the solution and only returns hints"""
+    """Replicate Wordle behavior: Check a guess against the solution and only returns hints"""
     # Extra function to generate hints locally for testing
 
     word = copy.copy(solution)
@@ -65,16 +68,14 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
     for i, hint in hints.items():
         letter = guess[i]
 
-        # green - letter is in the word and in the right position
-        if hint is True:
-            letters[letter].known_positions.add(i)
-        # yellow - letter is in the word but not in the right position
-        elif hint is False:
-            letters[letter].impossible_positions.add(i)
-            yellows[letter] = yellows.get(letter, 0) + 1
-        # gray - there is no more of the letter in the word
-        elif hint is None:
-            letters[letter].count_frozen = True
+        match hint:
+            case True: # green - letter is in the word and in the right position
+                letters[letter].known_positions.add(i)
+            case False: # yellow - letter is in the word but not in the right position
+                letters[letter].impossible_positions.add(i)
+                yellows[letter] = yellows.get(letter, 0) + 1
+            case None: # gray - there is no more of the letter in the word
+                letters[letter].count_frozen = True
 
         # min count of the letter: positions in green + positions in yellow
         letters[letter].min_count = len(
@@ -82,7 +83,7 @@ def build_letters_data(letters: dict[str, LetterData], guess: str, hints: dict):
 
 
 def eliminate(possible_words: set, guess: str, letters: dict[str, LetterData]):
-    """Check every word in wordslist and remove it if it doesn't meet the requirements"""
+    """Check every word in word list and remove it if it doesn't meet the requirements"""
 
     retained_words = copy.copy(possible_words)
 
@@ -122,7 +123,7 @@ def choose_word(guesses: set, possible_words: set, randomize: bool = False):
         return random.choice(list(possible_words))
     comparison = {}
     # The best next guess seems to be the one that differs most from the previous guesses
-    # since this diversifys the letters used therefore maximizing the hints received
+    # since this diversifies the letters used therefore maximizing the hints received
 
     for word in possible_words:
         for guess in guesses:
@@ -143,18 +144,17 @@ def colorize(guess: str, hints: dict):
 
     for i, hint in hints.items():
         letter = guess[i]
-        if hint is True:
-            result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
-        elif hint is False:
-            result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
-        elif hint is None:
-            result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
+
+        match hint:
+            case True: result += f"{Fore.LIGHTGREEN_EX}{letter}{Fore.RESET}"
+            case False: result += f"{Fore.LIGHTYELLOW_EX}{letter}{Fore.RESET}"
+            case None: result += f"{Fore.LIGHTBLACK_EX}{letter}{Fore.RESET}"
 
     return result
 
 
 def guess_word(get_hints: BuiltinFunctionType, solution: str = "empty"):
-    """Yeilds a guess until the guess matches the solution"""
+    """Yields a guess until the guess matches the solution"""
 
     i = int()
     guess = FIRST_GUESS
