@@ -69,9 +69,10 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
+        page.click(".purr-blocker-card__button") # accept terms
         page.click(".Welcome-module_button__ZG0Zh") # select play
         page.click(".Modal-module_closeIcon__TcEKb") # close tutorial pop up
-        ad = page.query_selector("#top") # remove ad to improve loading
+        ad = page.query_selector(".ad") # remove ad to improve loading
         ad.evaluate("ad => ad.remove()")
         page.wait_for_timeout(2000)
         page.click(".Board-module_board__jeoPS")
@@ -129,7 +130,7 @@ class Absurdle:
 
         page.goto(Absurdle.URL)
 
-        if hard_mode:  # enable hard mode from settings if requested
+        if hard_mode: # enable hard mode from settings if requested
             page.click("text=\ufe0f")
             page.click("#hardModeCheckbox")
             page.click("text=\u2715")
