@@ -7,6 +7,7 @@ Using wordguesser module to solve Wordle and Absurdle
 
 import re
 import sys
+
 import wordguesser
 
 playwright: object
@@ -57,7 +58,7 @@ class Wordle:
         hints = {i: None for i in range(5)}
         for pos, _ in enumerate(guess):
             hint = evaluations[pos]
-            
+
             match hint:
                 case "correct": hints[pos] = True
                 case "present": hints[pos] = False
@@ -69,17 +70,15 @@ class Wordle:
         """Pass guess from guess_word to the Wordle website"""
 
         page.goto(Wordle.URL)
-        page.click(".purr-blocker-card__button") # accept terms
-        page.click(".Welcome-module_button__ZG0Zh") # select play
-        page.click(".Modal-module_closeIcon__TcEKb") # close tutorial pop up
-        ad = page.query_selector(".ad") # remove ad to improve loading
+        page.click('[data-testid="Play"]') # select play
+        page.click('[data-testid="icon-close"]') # close tutorial pop up
+        ad = page.query_selector("#ad-top") # remove ad to improve loading
         ad.evaluate("ad => ad.remove()")
-        page.wait_for_timeout(2000)
         page.click(".Board-module_board__jeoPS")
 
         if hard_mode:  # enable hard mode from settings if requested
             page.click("#settings-button")
-            page.click(".Switch-module_switch__isHE_")
+            page.click('[aria-label="Hard Mode"]')
             page.click(".game-icon >> visible=true")
 
         # page.wait_for_load_state()
