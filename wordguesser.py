@@ -1,28 +1,30 @@
 #!/usr/bin/env python3
-#pylint: disable=multiple-statements, redefined-outer-name, unused-argument
+# pylint: disable=multiple-statements, redefined-outer-name, unused-argument
 
 """
 Module to guess Wordle words
 """
 
-from __future__ import annotations # for Python versions below 3.8
+from __future__ import annotations  # for Python versions below 3.8
+
 import copy
 import dataclasses
-import os
 import random
-from difflib import SequenceMatcher
 import string
+from difflib import SequenceMatcher
+from pathlib import Path
 from types import BuiltinFunctionType
+
 import colorama
 from colorama import Fore
 
-ABSPATH = os.path.join(os.path.dirname(__file__), "words.txt")
+WORDS_FILE = Path(__file__).parent / 'words.txt'
 WORD_LENGTH = 5
 WORD_LIST = set()
 FIRST_GUESS = "salet" # statistically the best guess to start Wordle with
 
-# adding words of WORDLENGTH to WORDLIST from words.txt
-with open(ABSPATH, "r", encoding="UTF-8") as file:
+# adding words of WORD_LENGTH to WORD_LIST from words.txt
+with open(WORDS_FILE, "r", encoding="UTF-8") as file:
     for line in file:
         word = line.strip().lower()
         if len(word) != WORD_LENGTH: continue
@@ -89,7 +91,6 @@ def eliminate(possible_words: set, guess: str, letters: dict[str, LetterData]):
 
     for word in possible_words:
         for i, letter in enumerate(word):
-
             if i in letters[guess[i]].known_positions and word[i] != guess[i]:
                 retained_words.remove(word)
                 break
