@@ -28,7 +28,7 @@ With the solution as "aroma":
 
 For 1000 random solutions the algorithm averaged 4.708 tries to get to the solution.
 
-https://user-images.githubusercontent.com/83647366/154109420-6425146f-ceaf-4ea7-bd9e-01b4e0045f1f.mp4
+[WordleSolverDemo.webm](https://github.com/user-attachments/assets/6fdb8e84-5d07-4b39-9ec4-9ea84a4dfc5d)
 
 [Detailed blog here](https://ansht.stck.me/post/16674/Hello-Wordle)
 
